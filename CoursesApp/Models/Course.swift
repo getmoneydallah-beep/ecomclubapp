@@ -39,8 +39,8 @@ struct Course: Codable, Identifiable {
         difficultyLevel = try container.decodeIfPresent(String.self, forKey: .difficultyLevel)
 
         // Handle duration_hours as either Int or Double
-        if let intDuration = try? container.decodeIfPresent(Int.self, forKey: .durationHours) {
-            durationHours = intDuration.map { Double($0) }
+        if let intValue = try? container.decode(Int.self, forKey: .durationHours) {
+            durationHours = Double(intValue)
         } else {
             durationHours = try container.decodeIfPresent(Double.self, forKey: .durationHours)
         }
