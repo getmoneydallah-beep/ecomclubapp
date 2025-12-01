@@ -40,7 +40,7 @@ struct Course: Codable, Identifiable {
 
         // Handle duration_hours as either Int or Double
         if let intDuration = try? container.decodeIfPresent(Int.self, forKey: .durationHours) {
-            durationHours = intDuration != nil ? Double(intDuration!) : nil
+            durationHours = intDuration.map { Double($0) }
         } else {
             durationHours = try container.decodeIfPresent(Double.self, forKey: .durationHours)
         }
