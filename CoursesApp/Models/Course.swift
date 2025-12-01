@@ -61,7 +61,7 @@ struct CourseSection: Codable, Identifiable {
         case titleAr = "title_ar"
         case descriptionAr = "description_ar"
         case orderIndex = "order_index"
-        case lessons
+        case lessons = "course_lessons"
     }
 }
 
