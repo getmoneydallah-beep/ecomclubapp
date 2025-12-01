@@ -11,7 +11,6 @@ struct Course: Codable, Identifiable {
     let published: Bool
     let difficultyLevel: String?
     let durationHours: Double?
-    let createdAt: Date?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -24,7 +23,6 @@ struct Course: Codable, Identifiable {
         case published
         case difficultyLevel = "difficulty_level"
         case durationHours = "duration_hours"
-        case createdAt = "created_at"
     }
 }
 
@@ -72,13 +70,11 @@ struct CourseEnrollment: Codable, Identifiable {
     let id: UUID
     let userId: UUID
     let courseId: UUID
-    let enrolledAt: Date?
 
     enum CodingKeys: String, CodingKey {
         case id
         case userId = "user_id"
         case courseId = "course_id"
-        case enrolledAt = "enrolled_at"
     }
 }
 
@@ -86,12 +82,10 @@ struct Subscription: Codable, Identifiable {
     let id: UUID
     let userId: UUID
     let status: String
-    let currentPeriodEnd: Date?
 
     enum CodingKeys: String, CodingKey {
         case id
         case userId = "user_id"
         case status
-        case currentPeriodEnd = "current_period_end"
     }
 }
