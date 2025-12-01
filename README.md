@@ -19,30 +19,38 @@ Simple iOS app for accessing and watching courses from your Supabase-powered cou
 
 ## Setup Instructions
 
-### 1. Open the Project
+### 1. Open the Project in Xcode
 
-Open the project in Xcode using either:
-- Open `CoursesApp.xcodeproj` if using Xcode project
-- Or open `Package.swift` if using Swift Package Manager
+Double-click `CoursesApp.xcodeproj` to open the project in Xcode.
 
-### 2. Install Dependencies
+### 2. Wait for Dependencies to Download
 
-The app uses Supabase Swift SDK. Dependencies are managed through Swift Package Manager and will be automatically resolved when you open the project.
+The app uses Supabase Swift SDK. When you first open the project, Xcode will automatically:
+- Resolve Swift Package Manager dependencies
+- Download the Supabase SDK (this may take 1-2 minutes)
+- You'll see "Resolving Package Graph" in the top bar
 
 ### 3. Build and Run
 
-1. Select a simulator or connected device
-2. Press `Cmd + R` to build and run
+Once dependencies are resolved:
+1. Select a simulator (e.g., iPhone 15) or connected device from the top toolbar
+2. Press `Cmd + R` or click the Play button to build and run
+3. The app will launch in the simulator
+
+**That's it!** The Supabase SDK and all dependencies are automatically included.
 
 ## Project Structure
 
 ```
-Sources/CoursesApp/
+CoursesApp.xcodeproj/         # Xcode project file
+CoursesApp/
 ├── CoursesApp.swift          # Main app entry point
+├── Info.plist                # App configuration
+├── CoursesApp.xcassets/      # App icons and assets
 ├── Models/
 │   └── Course.swift          # Data models
 ├── Services/
-│   ├── SupabaseClient.swift  # Supabase configuration
+│   ├── SupabaseClient.swift  # Supabase configuration (pre-configured!)
 │   ├── AuthManager.swift     # Authentication logic
 │   └── CoursesService.swift  # Courses API calls
 └── Views/
