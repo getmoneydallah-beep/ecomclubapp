@@ -49,13 +49,12 @@ class AuthManager: ObservableObject {
             )
 
             // Update profile with full name
-            if let userId = session.user?.id {
-                try await supabase
-                    .from("profiles")
-                    .update(["full_name": fullName])
-                    .eq("id", value: userId.uuidString)
-                    .execute()
-            }
+            let userId = session.user.id
+            try await supabase
+                .from("profiles")
+                .update(["full_name": fullName])
+                .eq("id", value: userId.uuidString)
+                .execute()
 
             self.isAuthenticated = true
             self.currentUser = session.user
