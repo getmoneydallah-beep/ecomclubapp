@@ -11,32 +11,8 @@ class CoursesService {
             .eq("published", value: true)
             .execute()
 
-        // Debug: Print raw response
-        if let jsonString = String(data: response.data, encoding: .utf8) {
-            print("📦 Raw courses response:", jsonString)
-        }
-
-        do {
-            let courses = try JSONDecoder().decode([Course].self, from: response.data)
-            return courses
-        } catch {
-            print("❌ Decoding error:", error)
-            if let decodingError = error as? DecodingError {
-                switch decodingError {
-                case .keyNotFound(let key, let context):
-                    print("Missing key '\(key.stringValue)' - \(context.debugDescription)")
-                case .typeMismatch(let type, let context):
-                    print("Type mismatch for type '\(type)' - \(context.debugDescription)")
-                case .valueNotFound(let type, let context):
-                    print("Value not found for type '\(type)' - \(context.debugDescription)")
-                case .dataCorrupted(let context):
-                    print("Data corrupted - \(context.debugDescription)")
-                @unknown default:
-                    print("Unknown decoding error")
-                }
-            }
-            throw error
-        }
+        let courses = try JSONDecoder().decode([Course].self, from: response.data)
+        return courses
     }
 
     func fetchCourseSections(courseId: UUID) async throws -> [CourseSection] {
@@ -47,36 +23,8 @@ class CoursesService {
             .order("order_index")
             .execute()
 
-        // Debug: Print raw response
-        if let jsonString = String(data: response.data, encoding: .utf8) {
-            print("📦 Raw sections response for course \(courseId):", jsonString)
-        }
-
-        do {
-            let sections = try JSONDecoder().decode([CourseSection].self, from: response.data)
-            print("✅ Successfully decoded \(sections.count) sections")
-            for section in sections {
-                print("  Section: \(section.titleAr) - Lessons: \(section.lessons?.count ?? 0)")
-            }
-            return sections
-        } catch {
-            print("❌ Sections decoding error:", error)
-            if let decodingError = error as? DecodingError {
-                switch decodingError {
-                case .keyNotFound(let key, let context):
-                    print("Missing key '\(key.stringValue)' - \(context.debugDescription)")
-                case .typeMismatch(let type, let context):
-                    print("Type mismatch for type '\(type)' - \(context.debugDescription)")
-                case .valueNotFound(let type, let context):
-                    print("Value not found for type '\(type)' - \(context.debugDescription)")
-                case .dataCorrupted(let context):
-                    print("Data corrupted - \(context.debugDescription)")
-                @unknown default:
-                    print("Unknown decoding error")
-                }
-            }
-            throw error
-        }
+        let sections = try JSONDecoder().decode([CourseSection].self, from: response.data)
+        return sections
     }
 
     func checkEnrollment(courseId: UUID, userId: UUID) async throws -> Bool {

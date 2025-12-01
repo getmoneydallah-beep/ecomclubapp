@@ -96,7 +96,9 @@ struct CourseDetailView: View {
                         ForEach(sections) { section in
                             SectionView(
                                 section: section,
-                                isEnrolled: isEnrolled || hasActiveSubscription || course.isFree
+                                course: course,
+                                isEnrolled: isEnrolled,
+                                hasActiveSubscription: hasActiveSubscription
                             )
                         }
                     }
@@ -122,7 +124,7 @@ struct CourseDetailView: View {
                 hasActiveSubscription = try await coursesService.checkActiveSubscription(userId: userId)
             }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "تعذر تحميل محتوى الدورة. يرجى المحاولة مرة أخرى."
         }
 
         isLoading = false
@@ -131,8 +133,34 @@ struct CourseDetailView: View {
 
 struct SectionView: View {
     let section: CourseSection
+    let course: Course
     let isEnrolled: Bool
+    let hasActiveSubscription: Bool
     @State private var isExpanded = true
+
+    private func hasAccess(for lesson: CourseLesson) -> Bool {
+        // Free course = everyone can access
+        if course.isFree {
+            return true
+        }
+
+        // Free preview lesson
+        if lesson.isFreePreview {
+            return true
+        }
+
+        // Active subscription + course included in subscription
+        if hasActiveSubscription && course.includedInSubscription {
+            return true
+        }
+
+        // User purchased course individually
+        if isEnrolled {
+            return true
+        }
+
+        return false
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -157,10 +185,15 @@ struct SectionView: View {
             }
 
             if isExpanded {
-                if let lessons = section.lessons {
+                if let lessons = section.lessons, !lessons.isEmpty {
                     ForEach(lessons.sorted(by: { $0.orderIndex < $1.orderIndex })) { lesson in
-                        LessonRowView(lesson: lesson, isAccessible: isEnrolled || lesson.isFreePreview)
+                        LessonRowView(lesson: lesson, isAccessible: hasAccess(for: lesson))
                     }
+                } else {
+                    Text("لا توجد دروس في هذا القسم")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .padding()
                 }
             }
         }

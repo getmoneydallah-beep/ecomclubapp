@@ -67,7 +67,7 @@ struct CoursesListView: View {
         do {
             courses = try await coursesService.fetchCourses()
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "تعذر تحميل الدورات. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
         }
 
         isLoading = false
