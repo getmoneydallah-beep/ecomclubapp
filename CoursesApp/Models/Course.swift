@@ -24,6 +24,27 @@ struct Course: Codable, Identifiable {
         case difficultyLevel = "difficulty_level"
         case durationHours = "duration_hours"
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(UUID.self, forKey: .id)
+        titleAr = try container.decode(String.self, forKey: .titleAr)
+        descriptionAr = try container.decodeIfPresent(String.self, forKey: .descriptionAr)
+        thumbnailUrl = try container.decodeIfPresent(String.self, forKey: .thumbnailUrl)
+        price = try container.decodeIfPresent(Double.self, forKey: .price)
+        isFree = try container.decode(Bool.self, forKey: .isFree)
+        includedInSubscription = try container.decode(Bool.self, forKey: .includedInSubscription)
+        published = try container.decode(Bool.self, forKey: .published)
+        difficultyLevel = try container.decodeIfPresent(String.self, forKey: .difficultyLevel)
+
+        // Handle duration_hours as either Int or Double
+        if let intDuration = try? container.decodeIfPresent(Int.self, forKey: .durationHours) {
+            durationHours = intDuration != nil ? Double(intDuration!) : nil
+        } else {
+            durationHours = try container.decodeIfPresent(Double.self, forKey: .durationHours)
+        }
+    }
 }
 
 struct CourseSection: Codable, Identifiable {
