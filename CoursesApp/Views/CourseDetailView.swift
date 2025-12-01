@@ -12,101 +12,153 @@ struct CourseDetailView: View {
     private let coursesService = CoursesService()
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Course Header
-                if let thumbnailUrl = course.thumbnailUrl {
-                    AsyncImage(url: URL(string: thumbnailUrl)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                    }
-                    .frame(height: 220)
-                    .clipped()
-                }
+        ZStack {
+            Color.secondaryBackground
+                .ignoresSafeArea()
 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(course.titleAr)
-                        .font(.title)
-                        .fontWeight(.bold)
-
-                    if let description = course.descriptionAr {
-                        Text(description)
-                            .font(.body)
-                            .foregroundColor(.gray)
-                    }
-
-                    HStack {
-                        if course.isFree {
-                            Text("مجاني")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.green)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.green.opacity(0.1))
-                                .cornerRadius(8)
-                        } else if let price = course.price {
-                            Text("\(String(format: "%.2f", price)) ريال")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.blue)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Hero Image
+                    ZStack(alignment: .bottomLeading) {
+                        if let thumbnailUrl = course.thumbnailUrl {
+                            AsyncImage(url: URL(string: thumbnailUrl)) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                case .empty, .failure:
+                                    Rectangle()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [.accent, .premium],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+                            .frame(height: 280)
+                            .clipped()
                         }
 
-                        Spacer()
+                        // Gradient Overlay
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.7)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 280)
 
-                        if let difficulty = course.difficultyLevel {
-                            Text(difficulty)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.orange.opacity(0.2))
-                                .cornerRadius(5)
+                        // Badge
+                        HStack {
+                            if course.isFree {
+                                Label("مجاني", systemImage: "checkmark.seal.fill")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(.green)
+                                    .cornerRadius(20)
+                            } else if let price = course.price, price > 0 {
+                                Label("\(String(format: "%.0f", price)) ريال", systemImage: "creditcard.fill")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(.blue)
+                                    .cornerRadius(20)
+                            }
+                            Spacer()
+                        }
+                        .padding(20)
+                    }
+
+                    // Content Card
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Title
+                        Text(course.titleAr)
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundColor(.primaryText)
+                            .multilineTextAlignment(.leading)
+
+                        // Description
+                        if let description = course.descriptionAr {
+                            Text(description)
+                                .font(.body)
+                                .foregroundColor(.secondaryText)
+                                .multilineTextAlignment(.leading)
+                        }
+
+                        // Metadata
+                        HStack(spacing: 20) {
+                            if let difficulty = course.difficultyLevel {
+                                MetadataItem(icon: "chart.bar.fill", text: difficulty, color: .orange)
+                            }
+
+                            if let duration = course.durationHours {
+                                MetadataItem(icon: "clock.fill", text: "\(String(format: "%.0f", duration)) ساعة", color: .blue)
+                            }
+                        }
+
+                        Divider()
+                            .padding(.vertical, 8)
+
+                        // Course Content Header
+                        HStack {
+                            Text("محتوى الدورة")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primaryText)
+                            Spacer()
+                        }
+
+                        // Loading / Error / Content
+                        if isLoading {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                Spacer()
+                            }
+                            .padding(.vertical, 40)
+                        } else if let error = errorMessage {
+                            VStack(spacing: 12) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.red)
+                                Text(error)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondaryText)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding()
+                        } else {
+                            VStack(spacing: 16) {
+                                ForEach(sections) { section in
+                                    ModernSectionView(
+                                        section: section,
+                                        course: course,
+                                        isEnrolled: isEnrolled,
+                                        hasActiveSubscription: hasActiveSubscription
+                                    )
+                                }
+                            }
                         }
                     }
-                }
-                .padding(.horizontal)
-
-                Divider()
-                    .padding(.horizontal)
-
-                // Course Content
-                if isLoading {
-                    ProgressView("جاري تحميل المحتوى...")
-                        .padding()
-                } else if let error = errorMessage {
-                    VStack {
-                        Text("حدث خطأ في تحميل المحتوى")
-                            .foregroundColor(.red)
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                    .padding()
-                } else {
-                    VStack(alignment: .leading, spacing: 15) {
-                        Text("محتوى الدورة")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .padding(.horizontal)
-
-                        ForEach(sections) { section in
-                            SectionView(
-                                section: section,
-                                course: course,
-                                isEnrolled: isEnrolled,
-                                hasActiveSubscription: hasActiveSubscription
-                            )
-                        }
-                    }
+                    .padding(20)
+                    .background(Color.cardBackground)
+                    .cornerRadius(32, corners: [.topLeft, .topRight])
+                    .offset(y: -30)
                 }
             }
+            .ignoresSafeArea(edges: .top)
         }
-        .environment(\.layoutDirection, .rightToLeft)
         .navigationBarTitleDisplayMode(.inline)
+        .environment(\.layoutDirection, .rightToLeft)
         .task {
             await loadCourseContent()
         }
@@ -131,7 +183,29 @@ struct CourseDetailView: View {
     }
 }
 
-struct SectionView: View {
+// Metadata Item Component
+struct MetadataItem: View {
+    let icon: String
+    let text: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundColor(color)
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(.secondaryText)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(color.opacity(0.1))
+        .cornerRadius(10)
+    }
+}
+
+// Modern Section View
+struct ModernSectionView: View {
     let section: CourseSection
     let course: Course
     let isEnrolled: Bool
@@ -139,128 +213,199 @@ struct SectionView: View {
     @State private var isExpanded = true
 
     private func hasAccess(for lesson: CourseLesson) -> Bool {
-        // Free course = everyone can access
-        if course.isFree {
-            return true
-        }
-
-        // Free preview lesson
-        if lesson.isFreePreview {
-            return true
-        }
-
-        // Active subscription + course included in subscription
-        if hasActiveSubscription && course.includedInSubscription {
-            return true
-        }
-
-        // User purchased course individually
-        if isEnrolled {
-            return true
-        }
-
+        if course.isFree { return true }
+        if lesson.isFreePreview { return true }
+        if hasActiveSubscription && course.includedInSubscription { return true }
+        if isEnrolled { return true }
         return false
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section Header
             Button(action: {
-                withAnimation {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
                     isExpanded.toggle()
                 }
             }) {
-                HStack {
-                    Text(section.titleAr)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                HStack(spacing: 12) {
+                    Image(systemName: isExpanded ? "chevron.down.circle.fill" : "chevron.left.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.accent)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(section.titleAr)
+                            .font(.headline)
+                            .foregroundColor(.primaryText)
+
+                        if let description = section.descriptionAr, !description.isEmpty {
+                            Text(description)
+                                .font(.caption)
+                                .foregroundColor(.secondaryText)
+                                .lineLimit(1)
+                        }
+                    }
 
                     Spacer()
 
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .foregroundColor(.gray)
+                    if let lessons = section.lessons {
+                        Text("\(lessons.count)")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(width: 28, height: 28)
+                            .background(Color.accent)
+                            .clipShape(Circle())
+                    }
                 }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
+                .padding(16)
+                .background(Color.tertiaryBackground)
+                .cornerRadius(16)
             }
+            .buttonStyle(PlainButtonStyle())
 
+            // Lessons
             if isExpanded {
                 if let lessons = section.lessons, !lessons.isEmpty {
-                    ForEach(lessons.sorted(by: { $0.orderIndex < $1.orderIndex })) { lesson in
-                        LessonRowView(lesson: lesson, isAccessible: hasAccess(for: lesson))
+                    VStack(spacing: 10) {
+                        ForEach(lessons.sorted(by: { $0.orderIndex < $1.orderIndex })) { lesson in
+                            ModernLessonRow(lesson: lesson, isAccessible: hasAccess(for: lesson))
+                        }
                     }
+                    .padding(.leading, 12)
                 } else {
                     Text("لا توجد دروس في هذا القسم")
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.tertiaryText)
                         .padding()
                 }
             }
         }
-        .padding(.horizontal)
     }
 }
 
-struct LessonRowView: View {
+// Modern Lesson Row
+struct ModernLessonRow: View {
     let lesson: CourseLesson
     let isAccessible: Bool
 
     var body: some View {
         NavigationLink(
-            destination: isAccessible ? AnyView(VideoPlayerView(lesson: lesson)) : AnyView(AccessDeniedView())
+            destination: isAccessible ? AnyView(ModernVideoPlayerView(lesson: lesson)) : AnyView(ModernAccessDeniedView())
         ) {
-            HStack(spacing: 12) {
-                Image(systemName: "play.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(isAccessible ? .blue : .gray)
+            HStack(spacing: 14) {
+                // Play Icon
+                ZStack {
+                    Circle()
+                        .fill(isAccessible ? Color.accent.opacity(0.15) : Color.gray.opacity(0.1))
+                        .frame(width: 48, height: 48)
 
-                VStack(alignment: .leading, spacing: 4) {
+                    Image(systemName: isAccessible ? "play.circle.fill" : "lock.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(isAccessible ? .accent : .gray)
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
                     Text(lesson.titleAr)
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primaryText)
+                        .lineLimit(2)
 
-                    HStack {
+                    HStack(spacing: 12) {
                         if lesson.isFreePreview {
-                            Text("معاينة مجانية")
+                            Label("معاينة مجانية", systemImage: "eye.fill")
                                 .font(.caption2)
                                 .foregroundColor(.green)
                         }
 
                         if let duration = lesson.videoDuration {
-                            Text("\(duration / 60) دقيقة")
+                            Label("\(duration / 60) دقيقة", systemImage: "clock.fill")
                                 .font(.caption2)
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondaryText)
                         }
                     }
                 }
 
                 Spacer()
 
-                if !isAccessible {
-                    Image(systemName: "lock.fill")
-                        .foregroundColor(.gray)
-                }
+                Image(systemName: "chevron.left")
+                    .font(.caption)
+                    .foregroundColor(.tertiaryText)
             }
-            .padding()
-            .background(Color.white)
-            .cornerRadius(8)
-            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
+            .padding(14)
+            .background(Color.cardBackground)
+            .cornerRadius(14)
+            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
-struct AccessDeniedView: View {
+// Modern Access Denied
+struct ModernAccessDeniedView: View {
     var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "lock.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.gray)
+        ZStack {
+            Color.secondaryBackground
+                .ignoresSafeArea()
 
-            Text("يجب التسجيل في الدورة للوصول إلى هذا الدرس")
-                .font(.headline)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+            VStack(spacing: 24) {
+                ZStack {
+                    Circle()
+                        .fill(Color.orange.opacity(0.1))
+                        .frame(width: 120, height: 120)
+
+                    Image(systemName: "lock.shield.fill")
+                        .font(.system(size: 50))
+                        .foregroundColor(.orange)
+                }
+
+                VStack(spacing: 12) {
+                    Text("محتوى مقفل")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primaryText)
+
+                    Text("يجب التسجيل في الدورة أو تفعيل الاشتراك للوصول إلى هذا الدرس")
+                        .font(.body)
+                        .foregroundColor(.secondaryText)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                }
+
+                Button(action: {}) {
+                    Text("عرض خطط الاشتراك")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 32)
+                        .padding(.vertical, 14)
+                        .background(Color.accent)
+                        .cornerRadius(14)
+                }
+            }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .environment(\.layoutDirection, .rightToLeft)
+    }
+}
+
+// Custom Corner Radius Extension
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
     }
 }

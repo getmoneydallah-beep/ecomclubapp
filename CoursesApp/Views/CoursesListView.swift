@@ -10,45 +10,57 @@ struct CoursesListView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                if isLoading {
-                    ProgressView("جاري التحميل...")
-                } else if let error = errorMessage {
-                    VStack(spacing: 10) {
-                        Text("حدث خطأ")
-                            .font(.headline)
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Button("إعادة المحاولة") {
+            ZStack {
+                // Background
+                Color.secondaryBackground
+                    .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    if isLoading {
+                        VStack(spacing: 20) {
+                            ProgressView()
+                                .scaleEffect(1.2)
+                            Text("جاري التحميل...")
+                                .foregroundColor(.secondaryText)
+                        }
+                        .frame(maxHeight: .infinity)
+                    } else if let error = errorMessage {
+                        ErrorView(message: error) {
                             Task {
                                 await loadCourses()
                             }
                         }
-                    }
-                } else if courses.isEmpty {
-                    Text("لا توجد دورات متاحة")
-                        .foregroundColor(.gray)
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 15) {
-                            ForEach(courses) { course in
-                                NavigationLink(destination: CourseDetailView(course: course)) {
-                                    CourseCardView(course: course)
+                    } else if courses.isEmpty {
+                        EmptyStateView()
+                    } else {
+                        ScrollView {
+                            LazyVStack(spacing: 20) {
+                                ForEach(courses) { course in
+                                    NavigationLink(destination: CourseDetailView(course: course)) {
+                                        ModernCourseCard(course: course)
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
-                                .buttonStyle(PlainButtonStyle())
                             }
+                            .padding()
                         }
-                        .padding()
                     }
                 }
-            }
-            .navigationTitle("الدورات")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("تسجيل الخروج") {
-                        Task {
-                            await authManager.signOut()
+                .navigationTitle("الدورات")
+                .navigationBarTitleDisplayMode(.large)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            Task {
+                                await authManager.signOut()
+                            }
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "rectangle.portrait.and.arrow.right")
+                                Text("خروج")
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(.accent)
                         }
                     }
                 }
@@ -74,72 +86,181 @@ struct CoursesListView: View {
     }
 }
 
-struct CourseCardView: View {
+// Modern Course Card
+struct ModernCourseCard: View {
     let course: Course
+    @State private var isPressed = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            if let thumbnailUrl = course.thumbnailUrl {
-                AsyncImage(url: URL(string: thumbnailUrl)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
+        VStack(alignment: .leading, spacing: 0) {
+            // Thumbnail
+            ZStack(alignment: .topTrailing) {
+                if let thumbnailUrl = course.thumbnailUrl {
+                    AsyncImage(url: URL(string: thumbnailUrl)) { phase in
+                        switch phase {
+                        case .empty:
+                            Rectangle()
+                                .fill(Color.tertiaryBackground)
+                                .overlay(
+                                    ProgressView()
+                                )
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        case .failure:
+                            Rectangle()
+                                .fill(Color.tertiaryBackground)
+                                .overlay(
+                                    Image(systemName: "photo")
+                                        .foregroundColor(.secondaryText)
+                                )
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                    .frame(height: 200)
+                    .clipped()
+                } else {
                     Rectangle()
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(
+                            LinearGradient(
+                                colors: [.accent.opacity(0.6), .premium.opacity(0.6)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(height: 200)
+                        .overlay(
+                            Image(systemName: "play.rectangle.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(.white.opacity(0.8))
+                        )
                 }
-                .frame(height: 180)
-                .clipped()
-                .cornerRadius(10)
+
+                // Free/Price Badge
+                if course.isFree {
+                    Text("مجاني")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.green)
+                        .cornerRadius(20)
+                        .padding(12)
+                }
             }
 
-            VStack(alignment: .leading, spacing: 5) {
+            // Content
+            VStack(alignment: .leading, spacing: 12) {
                 Text(course.titleAr)
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primaryText)
                     .lineLimit(2)
+                    .multilineTextAlignment(.leading)
 
                 if let description = course.descriptionAr {
                     Text(description)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                        .font(.subheadline)
+                        .foregroundColor(.secondaryText)
                         .lineLimit(2)
+                        .multilineTextAlignment(.leading)
                 }
 
-                HStack {
-                    if course.isFree {
-                        Text("مجاني")
+                // Metadata Row
+                HStack(spacing: 16) {
+                    if let difficulty = course.difficultyLevel {
+                        Label(difficulty, systemImage: "chart.bar.fill")
                             .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.green)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.green.opacity(0.1))
-                            .cornerRadius(5)
-                    } else if let price = course.price {
-                        Text("\(String(format: "%.2f", price)) ريال")
+                            .foregroundColor(.secondaryText)
+                    }
+
+                    if let duration = course.durationHours {
+                        Label("\(String(format: "%.0f", duration)) ساعة", systemImage: "clock.fill")
                             .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.secondaryText)
                     }
 
                     Spacer()
 
-                    if let duration = course.durationHours {
-                        HStack(spacing: 3) {
-                            Image(systemName: "clock")
-                            Text("\(String(format: "%.1f", duration)) ساعة")
+                    if !course.isFree {
+                        if let price = course.price, price > 0 {
+                            Text("\(String(format: "%.0f", price)) ريال")
+                                .font(.headline)
+                                .foregroundColor(.accent)
                         }
-                        .font(.caption)
-                        .foregroundColor(.gray)
                     }
                 }
             }
-            .padding(.horizontal, 5)
-            .padding(.bottom, 5)
+            .padding(16)
         }
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .background(Color.cardBackground)
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        .scaleEffect(isPressed ? 0.97 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
+        .onTapGesture {
+            isPressed = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isPressed = false
+            }
+        }
+    }
+}
+
+// Empty State View
+struct EmptyStateView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "tray")
+                .font(.system(size: 60))
+                .foregroundColor(.tertiaryText)
+
+            Text("لا توجد دورات متاحة حالياً")
+                .font(.headline)
+                .foregroundColor(.secondaryText)
+        }
+        .frame(maxHeight: .infinity)
+    }
+}
+
+// Error View
+struct ErrorView: View {
+    let message: String
+    let retryAction: () -> Void
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "wifi.exclamationmark")
+                .font(.system(size: 60))
+                .foregroundColor(.red)
+
+            Text("حدث خطأ")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.primaryText)
+
+            Text(message)
+                .font(.subheadline)
+                .foregroundColor(.secondaryText)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            Button(action: retryAction) {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                    Text("إعادة المحاولة")
+                }
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 12)
+                .background(Color.accent)
+                .cornerRadius(12)
+            }
+        }
+        .frame(maxHeight: .infinity)
     }
 }

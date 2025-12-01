@@ -9,77 +9,175 @@ struct LoginView: View {
     @State private var isLoading = false
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                Text(isSignUp ? "إنشاء حساب" : "تسجيل الدخول")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.top, 50)
+        ZStack {
+            // Modern gradient background
+            LinearGradient(
+                colors: [Color.accent.opacity(0.1), Color.premium.opacity(0.05)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
 
-                VStack(spacing: 15) {
-                    if isSignUp {
-                        TextField("الاسم الكامل", text: $fullName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
+            ScrollView {
+                VStack(spacing: 32) {
+                    // App Icon/Logo Area
+                    VStack(spacing: 12) {
+                        Image(systemName: "graduationcap.circle.fill")
+                            .font(.system(size: 70))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.accent, .premium],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+
+                        Text(isSignUp ? "إنشاء حساب جديد" : "مرحباً بك")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundColor(.primaryText)
+
+                        Text(isSignUp ? "انضم إلى منصة الدورات" : "سجل الدخول للمتابعة")
+                            .font(.subheadline)
+                            .foregroundColor(.secondaryText)
                     }
+                    .padding(.top, 60)
 
-                    TextField("البريد الإلكتروني", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .padding(.horizontal)
-
-                    SecureField("كلمة المرور", text: $password)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                }
-                .padding(.top, 20)
-
-                if let errorMessage = authManager.errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .font(.caption)
-                        .padding(.horizontal)
-                }
-
-                Button(action: {
-                    isLoading = true
-                    Task {
+                    // Form Card
+                    VStack(spacing: 20) {
                         if isSignUp {
-                            await authManager.signUp(email: email, password: password, fullName: fullName)
-                        } else {
-                            await authManager.signIn(email: email, password: password)
+                            ModernTextField(
+                                icon: "person.fill",
+                                placeholder: "الاسم الكامل",
+                                text: $fullName
+                            )
                         }
-                        isLoading = false
-                    }
-                }) {
-                    if isLoading {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    } else {
-                        Text(isSignUp ? "إنشاء حساب" : "تسجيل الدخول")
-                            .fontWeight(.semibold)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-                .padding(.horizontal)
-                .disabled(isLoading)
 
-                Button(action: {
-                    isSignUp.toggle()
-                }) {
-                    Text(isSignUp ? "لديك حساب بالفعل؟ سجل الدخول" : "ليس لديك حساب؟ سجل الآن")
-                        .foregroundColor(.blue)
-                }
-                .padding(.top, 10)
+                        ModernTextField(
+                            icon: "envelope.fill",
+                            placeholder: "البريد الإلكتروني",
+                            text: $email,
+                            keyboardType: .emailAddress
+                        )
 
-                Spacer()
+                        ModernTextField(
+                            icon: "lock.fill",
+                            placeholder: "كلمة المرور",
+                            text: $password,
+                            isSecure: true
+                        )
+
+                        if let errorMessage = authManager.errorMessage {
+                            HStack(spacing: 8) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundColor(.red)
+                                Text(errorMessage)
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
+                            .padding(.horizontal)
+                        }
+
+                        // Primary Action Button
+                        Button(action: {
+                            isLoading = true
+                            Task {
+                                if isSignUp {
+                                    await authManager.signUp(email: email, password: password, fullName: fullName)
+                                } else {
+                                    await authManager.signIn(email: email, password: password)
+                                }
+                                isLoading = false
+                            }
+                        }) {
+                            HStack(spacing: 12) {
+                                if isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                } else {
+                                    Image(systemName: isSignUp ? "person.badge.plus" : "arrow.right.circle.fill")
+                                    Text(isSignUp ? "إنشاء الحساب" : "تسجيل الدخول")
+                                        .fontWeight(.semibold)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(
+                                LinearGradient(
+                                    colors: [.accent, .premium],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(14)
+                            .shadow(color: Color.accent.opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                        .disabled(isLoading)
+                    }
+                    .padding(24)
+                    .background(Color.cardBackground)
+                    .cornerRadius(24)
+                    .shadow(color: Color.black.opacity(0.05), radius: 20, x: 0, y: 10)
+                    .padding(.horizontal, 20)
+
+                    // Toggle Sign Up/Sign In
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            isSignUp.toggle()
+                        }
+                    }) {
+                        HStack(spacing: 4) {
+                            Text(isSignUp ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟")
+                                .foregroundColor(.secondaryText)
+                            Text(isSignUp ? "سجل الدخول" : "سجل الآن")
+                                .fontWeight(.semibold)
+                                .foregroundColor(.accent)
+                        }
+                        .font(.subheadline)
+                    }
+                    .padding(.bottom, 40)
+                }
             }
-            .environment(\.layoutDirection, .rightToLeft)
         }
+        .environment(\.layoutDirection, .rightToLeft)
+    }
+}
+
+// Modern Text Field Component
+struct ModernTextField: View {
+    let icon: String
+    let placeholder: String
+    @Binding var text: String
+    var keyboardType: UIKeyboardType = .default
+    var isSecure: Bool = false
+
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(isFocused ? .accent : .secondaryText)
+                .frame(width: 20)
+
+            if isSecure {
+                SecureField(placeholder, text: $text)
+                    .focused($isFocused)
+                    .autocapitalization(.none)
+            } else {
+                TextField(placeholder, text: $text)
+                    .focused($isFocused)
+                    .keyboardType(keyboardType)
+                    .autocapitalization(.none)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(Color.secondaryBackground)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isFocused ? Color.accent : Color.clear, lineWidth: 2)
+        )
+        .animation(.easeInOut(duration: 0.2), value: isFocused)
     }
 }
