@@ -10,74 +10,79 @@ struct LoginView: View {
 
     var body: some View {
         ZStack {
-            // Modern gradient background
-            LinearGradient(
-                colors: [Color.accent.opacity(0.1), Color.premium.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Deep black background
+            Color.primaryBackground
+                .ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 32) {
-                    // App Icon/Logo Area
-                    VStack(spacing: 12) {
-                        Image(systemName: "graduationcap.circle.fill")
-                            .font(.system(size: 70))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [.accent, .premium],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 40) {
+                    Spacer()
+                        .frame(height: 60)
 
-                        Text(isSignUp ? "إنشاء حساب جديد" : "مرحباً بك")
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
-                            .foregroundColor(.primaryText)
-
-                        Text(isSignUp ? "انضم إلى منصة الدورات" : "سجل الدخول للمتابعة")
-                            .font(.subheadline)
-                            .foregroundColor(.secondaryText)
-                    }
-                    .padding(.top, 60)
-
-                    // Form Card
+                    // Premium Logo Area
                     VStack(spacing: 20) {
+                        // Glowing icon
+                        ZStack {
+                            Circle()
+                                .fill(Color.accentDim)
+                                .frame(width: 120, height: 120)
+                                .blur(radius: 30)
+
+                            Image(systemName: "graduationcap.fill")
+                                .font(.system(size: 50, weight: .light))
+                                .foregroundColor(.accent)
+                        }
+
+                        VStack(spacing: 8) {
+                            Text(isSignUp ? "إنشاء حساب" : "تسجيل الدخول")
+                                .font(.system(size: 36, weight: .bold, design: .default))
+                                .foregroundColor(.primaryText)
+
+                            Text(isSignUp ? "انضم إلى المنصة الآن" : "مرحباً بعودتك")
+                                .font(.system(size: 15, weight: .regular))
+                                .foregroundColor(.secondaryText)
+                        }
+                    }
+                    .padding(.bottom, 20)
+
+                    // Form Container
+                    VStack(spacing: 24) {
                         if isSignUp {
-                            ModernTextField(
+                            PremiumTextField(
                                 icon: "person.fill",
                                 placeholder: "الاسم الكامل",
                                 text: $fullName
                             )
                         }
 
-                        ModernTextField(
+                        PremiumTextField(
                             icon: "envelope.fill",
                             placeholder: "البريد الإلكتروني",
                             text: $email,
                             keyboardType: .emailAddress
                         )
 
-                        ModernTextField(
+                        PremiumTextField(
                             icon: "lock.fill",
                             placeholder: "كلمة المرور",
                             text: $password,
                             isSecure: true
                         )
 
+                        // Error Message
                         if let errorMessage = authManager.errorMessage {
-                            HStack(spacing: 8) {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundColor(.red)
+                            HStack(spacing: 10) {
+                                Image(systemName: "exclamationmark.circle.fill")
+                                    .foregroundColor(.danger)
                                 Text(errorMessage)
-                                    .font(.caption)
-                                    .foregroundColor(.red)
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundColor(.danger)
+                                Spacer()
                             }
-                            .padding(.horizontal)
+                            .padding(.horizontal, 6)
                         }
 
-                        // Primary Action Button
+                        // Primary Button
                         Button(action: {
                             isLoading = true
                             Task {
@@ -92,50 +97,49 @@ struct LoginView: View {
                             HStack(spacing: 12) {
                                 if isLoading {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .primaryBackground))
+                                        .scaleEffect(1.1)
                                 } else {
-                                    Image(systemName: isSignUp ? "person.badge.plus" : "arrow.right.circle.fill")
-                                    Text(isSignUp ? "إنشاء الحساب" : "تسجيل الدخول")
-                                        .fontWeight(.semibold)
+                                    Text(isSignUp ? "إنشاء الحساب" : "دخول")
+                                        .font(.system(size: 17, weight: .semibold))
+
+                                    Image(systemName: "arrow.left")
+                                        .font(.system(size: 16, weight: .semibold))
                                 }
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(
-                                LinearGradient(
-                                    colors: [.accent, .premium],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .foregroundColor(.white)
-                            .cornerRadius(14)
-                            .shadow(color: Color.accent.opacity(0.3), radius: 8, x: 0, y: 4)
+                            .frame(height: 56)
+                            .background(Color.accent)
+                            .foregroundColor(.primaryBackground)
+                            .cornerRadius(16)
+                            .shadow(color: Color.accentGlow, radius: 20, x: 0, y: 8)
                         }
-                        .disabled(isLoading)
+                        .disabled(isLoading || email.isEmpty || password.isEmpty || (isSignUp && fullName.isEmpty))
+                        .opacity((isLoading || email.isEmpty || password.isEmpty || (isSignUp && fullName.isEmpty)) ? 0.5 : 1.0)
+                        .animation(.easeInOut(duration: 0.2), value: isLoading)
+                        .padding(.top, 8)
                     }
-                    .padding(24)
-                    .background(Color.cardBackground)
-                    .cornerRadius(24)
-                    .shadow(color: Color.black.opacity(0.05), radius: 20, x: 0, y: 10)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 28)
 
                     // Toggle Sign Up/Sign In
                     Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                             isSignUp.toggle()
                         }
                     }) {
-                        HStack(spacing: 4) {
-                            Text(isSignUp ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟")
+                        HStack(spacing: 6) {
+                            Text(isSignUp ? "لديك حساب؟" : "حساب جديد؟")
                                 .foregroundColor(.secondaryText)
-                            Text(isSignUp ? "سجل الدخول" : "سجل الآن")
+                            Text(isSignUp ? "دخول" : "سجّل الآن")
                                 .fontWeight(.semibold)
                                 .foregroundColor(.accent)
                         }
-                        .font(.subheadline)
+                        .font(.system(size: 15))
                     }
-                    .padding(.bottom, 40)
+                    .padding(.top, 12)
+
+                    Spacer()
+                        .frame(height: 60)
                 }
             }
         }
@@ -143,8 +147,8 @@ struct LoginView: View {
     }
 }
 
-// Modern Text Field Component
-struct ModernTextField: View {
+// Premium Text Field Component
+struct PremiumTextField: View {
     let icon: String
     let placeholder: String
     @Binding var text: String
@@ -154,30 +158,45 @@ struct ModernTextField: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(isFocused ? .accent : .secondaryText)
-                .frame(width: 20)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(isFocused ? .accent : .tertiaryText)
+                    .frame(width: 22)
 
-            if isSecure {
-                SecureField(placeholder, text: $text)
-                    .focused($isFocused)
-                    .autocapitalization(.none)
-            } else {
-                TextField(placeholder, text: $text)
-                    .focused($isFocused)
-                    .keyboardType(keyboardType)
-                    .autocapitalization(.none)
+                ZStack(alignment: .leading) {
+                    if text.isEmpty {
+                        Text(placeholder)
+                            .foregroundColor(.tertiaryText)
+                            .font(.system(size: 16))
+                    }
+
+                    if isSecure {
+                        SecureField("", text: $text)
+                            .focused($isFocused)
+                            .autocapitalization(.none)
+                            .foregroundColor(.primaryText)
+                            .font(.system(size: 16, weight: .medium))
+                    } else {
+                        TextField("", text: $text)
+                            .focused($isFocused)
+                            .keyboardType(keyboardType)
+                            .autocapitalization(.none)
+                            .foregroundColor(.primaryText)
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                }
             }
+            .padding(.horizontal, 20)
+            .frame(height: 56)
+            .background(Color.inputBackground)
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(isFocused ? Color.accent : Color.clear, lineWidth: 1.5)
+            )
+            .animation(.easeInOut(duration: 0.25), value: isFocused)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(Color.secondaryBackground)
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(isFocused ? Color.accent : Color.clear, lineWidth: 2)
-        )
-        .animation(.easeInOut(duration: 0.2), value: isFocused)
     }
 }

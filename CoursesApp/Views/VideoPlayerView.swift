@@ -1,7 +1,7 @@
 import SwiftUI
 import AVKit
 
-struct ModernVideoPlayerView: View {
+struct PremiumVideoPlayerView: View {
     let lesson: CourseLesson
     @State private var player: AVPlayer?
     @State private var isPlaying = false
@@ -9,17 +9,16 @@ struct ModernVideoPlayerView: View {
 
     var body: some View {
         ZStack {
-            Color.black
+            Color.primaryBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Video Player
+                // Video Player Section
                 if let videoUrl = lesson.videoUrl, let url = URL(string: videoUrl) {
                     ZStack {
                         VideoPlayer(player: player)
                             .onAppear {
                                 player = AVPlayer(url: url)
-                                // Auto play
                                 player?.play()
                                 isPlaying = true
                             }
@@ -27,109 +26,136 @@ struct ModernVideoPlayerView: View {
                                 player?.pause()
                             }
 
-                        // Custom Controls Overlay
+                        // Custom overlay for close button
                         VStack {
-                            // Top Bar
                             HStack {
+                                Spacer()
                                 Button(action: {
                                     dismiss()
                                 }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.white)
-                                        .shadow(radius: 4)
-                                }
-                                Spacer()
-                            }
-                            .padding()
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.primaryBackground.opacity(0.8))
+                                            .frame(width: 44, height: 44)
+                                            .blur(radius: 2)
 
+                                        Image(systemName: "xmark")
+                                            .font(.system(size: 16, weight: .semibold))
+                                            .foregroundColor(.primaryText)
+                                    }
+                                }
+                                .padding(16)
+                            }
                             Spacer()
                         }
                     }
                     .frame(height: 280)
                 } else {
                     Rectangle()
-                        .fill(Color.black)
+                        .fill(Color.tertiaryBackground)
                         .frame(height: 280)
                         .overlay(
-                            VStack(spacing: 16) {
+                            VStack(spacing: 20) {
                                 Image(systemName: "video.slash.fill")
-                                    .font(.system(size: 50))
-                                    .foregroundColor(.white.opacity(0.6))
+                                    .font(.system(size: 50, weight: .ultraLight))
+                                    .foregroundColor(.tertiaryText)
                                 Text("الفيديو غير متاح")
-                                    .foregroundColor(.white.opacity(0.8))
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundColor(.secondaryText)
                             }
                         )
                 }
 
                 // Content Section
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 24) {
                         // Title
                         Text(lesson.titleAr)
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .font(.system(size: 26, weight: .bold))
                             .foregroundColor(.primaryText)
                             .multilineTextAlignment(.leading)
+                            .lineSpacing(2)
 
-                        // Duration Badge
-                        if let duration = lesson.videoDuration {
-                            HStack(spacing: 12) {
-                                Label("\(duration / 60) دقيقة", systemImage: "clock.fill")
-                                    .font(.subheadline)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
-                                    .background(Color.accent)
-                                    .cornerRadius(20)
-
-                                if lesson.isFreePreview {
-                                    Label("معاينة مجانية", systemImage: "eye.fill")
-                                        .font(.subheadline)
-                                        .foregroundColor(.white)
-                                        .padding(.horizontal, 14)
-                                        .padding(.vertical, 8)
-                                        .background(Color.green)
-                                        .cornerRadius(20)
+                        // Metadata badges
+                        HStack(spacing: 12) {
+                            if let duration = lesson.videoDuration {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "clock.fill")
+                                        .font(.system(size: 12))
+                                    Text("\(duration / 60) دقيقة")
+                                        .font(.system(size: 13, weight: .semibold))
                                 }
+                                .foregroundColor(.accent)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(Color.accentDim)
+                                .cornerRadius(20)
+                            }
+
+                            if lesson.isFreePreview {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "eye.fill")
+                                        .font(.system(size: 12))
+                                    Text("معاينة مجانية")
+                                        .font(.system(size: 13, weight: .semibold))
+                                }
+                                .foregroundColor(.success)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(Color.success.opacity(0.15))
+                                .cornerRadius(20)
                             }
                         }
 
-                        Divider()
+                        // Divider
+                        Rectangle()
+                            .fill(Color.tertiaryBackground)
+                            .frame(height: 1)
 
-                        // Description
+                        // Description Section
                         if let description = lesson.descriptionAr, !description.isEmpty {
-                            VStack(alignment: .leading, spacing: 12) {
-                                HStack {
-                                    Image(systemName: "doc.text.fill")
+                            VStack(alignment: .leading, spacing: 14) {
+                                HStack(spacing: 10) {
+                                    Image(systemName: "text.alignright")
+                                        .font(.system(size: 16, weight: .medium))
                                         .foregroundColor(.accent)
-                                    Text("عن الدرس")
-                                        .font(.headline)
+                                    Text("الوصف")
+                                        .font(.system(size: 18, weight: .bold))
                                         .foregroundColor(.primaryText)
                                 }
 
-                                // HTML Text View for rich content
                                 HTMLTextView(htmlString: description)
-                                    .font(.body)
+                                    .font(.system(size: 15, weight: .regular))
                                     .foregroundColor(.secondaryText)
-                                    .padding(16)
-                                    .background(Color.tertiaryBackground)
-                                    .cornerRadius(12)
+                                    .padding(18)
+                                    .background(Color.cardBackground)
+                                    .cornerRadius(16)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .strokeBorder(Color.tertiaryBackground, lineWidth: 1)
+                                    )
                             }
                         }
 
                         // Playback Controls Card
-                        VStack(spacing: 16) {
-                            HStack {
+                        VStack(alignment: .leading, spacing: 16) {
+                            HStack(spacing: 10) {
                                 Image(systemName: "waveform")
+                                    .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.accent)
                                 Text("التحكم في التشغيل")
-                                    .font(.headline)
+                                    .font(.system(size: 18, weight: .bold))
                                     .foregroundColor(.primaryText)
                             }
 
-                            HStack(spacing: 20) {
+                            HStack(spacing: 24) {
+                                Spacer()
+
                                 // Rewind 10s
-                                ControlButton(icon: "gobackward.10") {
+                                PremiumControlButton(
+                                    icon: "gobackward.10",
+                                    size: 60
+                                ) {
                                     if let player = player {
                                         let newTime = CMTimeAdd(player.currentTime(), CMTime(seconds: -10, preferredTimescale: 1))
                                         player.seek(to: newTime)
@@ -137,7 +163,11 @@ struct ModernVideoPlayerView: View {
                                 }
 
                                 // Play/Pause
-                                ControlButton(icon: isPlaying ? "pause.circle.fill" : "play.circle.fill", size: 60) {
+                                PremiumControlButton(
+                                    icon: isPlaying ? "pause.circle.fill" : "play.circle.fill",
+                                    size: 80,
+                                    isPrimary: true
+                                ) {
                                     if let player = player {
                                         if isPlaying {
                                             player.pause()
@@ -149,43 +179,65 @@ struct ModernVideoPlayerView: View {
                                 }
 
                                 // Forward 10s
-                                ControlButton(icon: "goforward.10") {
+                                PremiumControlButton(
+                                    icon: "goforward.10",
+                                    size: 60
+                                ) {
                                     if let player = player {
                                         let newTime = CMTimeAdd(player.currentTime(), CMTime(seconds: 10, preferredTimescale: 1))
                                         player.seek(to: newTime)
                                     }
                                 }
+
+                                Spacer()
                             }
                         }
-                        .padding(20)
+                        .padding(22)
                         .background(Color.cardBackground)
-                        .cornerRadius(16)
-                        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+                        .cornerRadius(20)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .strokeBorder(
+                                    LinearGradient(
+                                        colors: [Color.accentDim, Color.clear],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
+                        )
+                        .shadow(color: Color.accentGlow.opacity(0.08), radius: 16, x: 0, y: 6)
                     }
-                    .padding(20)
+                    .padding(24)
                 }
-                .background(Color.secondaryBackground)
+                .background(Color.primaryBackground)
             }
         }
         .navigationBarHidden(true)
         .environment(\.layoutDirection, .rightToLeft)
+        .preferredColorScheme(.dark)
     }
 }
 
-// Control Button Component
-struct ControlButton: View {
+// Premium Control Button Component
+struct PremiumControlButton: View {
     let icon: String
-    var size: CGFloat = 44
+    var size: CGFloat = 60
+    var isPrimary: Bool = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: size == 60 ? 40 : 24))
-                .foregroundColor(.accent)
-                .frame(width: size, height: size)
-                .background(Color.accent.opacity(0.1))
-                .clipShape(Circle())
+            ZStack {
+                Circle()
+                    .fill(isPrimary ? Color.accentDim : Color.tertiaryBackground)
+                    .frame(width: size, height: size)
+
+                Image(systemName: icon)
+                    .font(.system(size: size * 0.4, weight: .medium))
+                    .foregroundColor(isPrimary ? .accent : .primaryText)
+            }
+            .shadow(color: isPrimary ? Color.accentGlow.opacity(0.3) : Color.clear, radius: 12, x: 0, y: 4)
         }
     }
 }
