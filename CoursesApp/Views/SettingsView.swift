@@ -1,4 +1,5 @@
 import SwiftUI
+import Supabase
 
 struct SettingsView: View {
     @EnvironmentObject var authManager: AuthManager
@@ -219,7 +220,7 @@ struct SettingsActionRow: View {
 
 // User Profile Section
 struct UserProfileSection: View {
-    let user: Supabase.User?
+    let user: User?
 
     var body: some View {
         if let user = user {
