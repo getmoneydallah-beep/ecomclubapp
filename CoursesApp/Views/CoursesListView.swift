@@ -27,8 +27,17 @@ struct CoursesListView: View {
         }
     }
 
+    // Adaptive padding for iPad/iPhone
+    private var adaptivePadding: CGFloat {
+        #if os(iOS)
+        return UIDevice.current.userInterfaceIdiom == .pad ? 40 : 20
+        #else
+        return 20
+        #endif
+    }
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // Deep black background
                 Color.primaryBackground
@@ -56,24 +65,26 @@ struct CoursesListView: View {
                     } else {
                         VStack(spacing: 0) {
                             // Filter Tabs
-                            HStack(spacing: 12) {
-                                ForEach(CourseFilter.allCases, id: \.self) { filter in
-                                    FilterTab(
-                                        title: filter.rawValue,
-                                        isSelected: selectedFilter == filter
-                                    ) {
-                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                            selectedFilter = filter
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(CourseFilter.allCases, id: \.self) { filter in
+                                        FilterTab(
+                                            title: filter.rawValue,
+                                            isSelected: selectedFilter == filter
+                                        ) {
+                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                                selectedFilter = filter
+                                            }
                                         }
                                     }
                                 }
+                                .padding(.horizontal, 20)
                             }
-                            .padding(.horizontal, 20)
                             .padding(.vertical, 16)
 
                             // Courses List
                             ScrollView(showsIndicators: false) {
-                                VStack(spacing: 20) {
+                                LazyVStack(spacing: 20) {
                                     ForEach(filteredCourses) { course in
                                         NavigationLink(destination: CourseDetailView(course: course)) {
                                             PremiumCourseCard(course: course)
@@ -94,7 +105,8 @@ struct CoursesListView: View {
                                         .padding(.vertical, 60)
                                     }
                                 }
-                                .padding(.horizontal, 20)
+                                .frame(maxWidth: .infinity)
+                                .padding(.horizontal, adaptivePadding)
                                 .padding(.vertical, 16)
                             }
                         }
@@ -103,7 +115,7 @@ struct CoursesListView: View {
                 .navigationTitle("الدورات")
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItem(placement: .topBarLeading) {
                         Button(action: {
                             showSettings = true
                         }) {
@@ -143,6 +155,11 @@ struct CoursesListView: View {
 // Premium Course Card
 struct PremiumCourseCard: View {
     let course: Course
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+
+    private var cardMaxWidth: CGFloat? {
+        horizontalSizeClass == .regular ? 600 : nil
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -268,6 +285,7 @@ struct PremiumCourseCard: View {
             }
             .padding(18)
         }
+        .frame(maxWidth: cardMaxWidth)
         .background(Color.cardBackground)
         .cornerRadius(20)
         .overlay(

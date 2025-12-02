@@ -135,6 +135,8 @@ struct PremiumVideoPlayerView: View {
                             }
                         }
                     }
+                    .frame(maxWidth: 800)
+                    .frame(maxWidth: .infinity)
                     .padding(24)
                 }
                 .background(Color.primaryBackground)

@@ -19,7 +19,7 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.primaryBackground
                     .ignoresSafeArea()
@@ -51,6 +51,8 @@ struct SettingsView: View {
                         // App Info
                         AppVersionSection(version: appVersion)
                     }
+                    .frame(maxWidth: 600)
+                    .frame(maxWidth: .infinity)
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
                 }
@@ -58,7 +60,7 @@ struct SettingsView: View {
             .navigationTitle("الإعدادات")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         dismiss()
                     }) {

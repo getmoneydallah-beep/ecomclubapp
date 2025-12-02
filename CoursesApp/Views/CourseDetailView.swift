@@ -165,6 +165,7 @@ struct CourseDetailView: View {
                             }
                         }
                     }
+                    .frame(maxWidth: .infinity)
                     .padding(20)
                     .background(Color.primaryBackground)
                     .offset(y: -30)

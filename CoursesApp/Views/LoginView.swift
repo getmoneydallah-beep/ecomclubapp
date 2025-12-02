@@ -177,6 +177,8 @@ struct LoginView: View {
                     Spacer()
                         .frame(height: 60)
                 }
+                .frame(maxWidth: 500)
+                .frame(maxWidth: .infinity)
             }
         }
         .environment(\.layoutDirection, .rightToLeft)
