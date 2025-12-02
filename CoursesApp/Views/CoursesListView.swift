@@ -89,7 +89,6 @@ struct CoursesListView: View {
 // Modern Course Card
 struct ModernCourseCard: View {
     let course: Course
-    @State private var isPressed = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -199,14 +198,6 @@ struct ModernCourseCard: View {
         .background(Color.cardBackground)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
-        .scaleEffect(isPressed ? 0.97 : 1.0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-        .onTapGesture {
-            isPressed = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isPressed = false
-            }
-        }
     }
 }
 
