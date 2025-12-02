@@ -10,9 +10,11 @@ struct SettingsView: View {
 
     // Get app version
     private var appVersion: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
-        return "\(version) (\(build))"
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
+           let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+            return "\(version) (\(build))"
+        }
+        return "1.0 (1)"
     }
 
     var body: some View {
@@ -24,128 +26,29 @@ struct SettingsView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 24) {
                         // User Info Section
-                        if let user = authManager.currentUser {
-                            VStack(spacing: 16) {
-                                // Avatar
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.accentDim)
-                                        .frame(width: 80, height: 80)
-                                        .blur(radius: 20)
-
-                                    Circle()
-                                        .fill(Color.cardBackground)
-                                        .frame(width: 80, height: 80)
-                                        .overlay(
-                                            Circle()
-                                                .strokeBorder(Color.accent, lineWidth: 2)
-                                        )
-
-                                    Text(String(user.email.prefix(1)).uppercased())
-                                        .font(.system(size: 32, weight: .bold))
-                                        .foregroundColor(.accent)
-                                }
-
-                                VStack(spacing: 6) {
-                                    if let fullName = user.fullName {
-                                        Text(fullName)
-                                            .font(.system(size: 20, weight: .bold))
-                                            .foregroundColor(.primaryText)
-                                    }
-
-                                    Text(user.email)
-                                        .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.secondaryText)
-                                }
-                            }
-                            .padding(.vertical, 20)
-                        }
+                        UserProfileSection(user: authManager.currentUser)
 
                         // Legal & Compliance Section
-                        VStack(spacing: 0) {
-                            SectionHeader(title: "القانونية والخصوصية")
-
-                            SettingsLinkRow(
-                                icon: "shield.checkered",
-                                title: "سياسة الخصوصية",
-                                iconColor: .accent
-                            ) {
-                                if let url = URL(string: "https://ecomclub.net/privacy-policy") {
-                                    UIApplication.shared.open(url)
-                                }
-                            }
-
-                            Divider()
-                                .background(Color.tertiaryBackground)
-                                .padding(.horizontal, 20)
-
-                            SettingsLinkRow(
-                                icon: "doc.text",
-                                title: "شروط الاستخدام",
-                                iconColor: .accent
-                            ) {
-                                if let url = URL(string: "https://ecomclub.net/terms") {
-                                    UIApplication.shared.open(url)
-                                }
-                            }
-                        }
+                        LegalSection()
 
                         // Support Section
-                        VStack(spacing: 0) {
-                            SectionHeader(title: "الدعم والمساعدة")
-
-                            SettingsLinkRow(
-                                icon: "envelope.fill",
-                                title: "تواصل معنا",
-                                subtitle: "support@econabdullah.com",
-                                iconColor: .premium
-                            ) {
-                                if let url = URL(string: "mailto:support@econabdullah.com") {
-                                    UIApplication.shared.open(url)
-                                }
-                            }
-                        }
+                        SupportSection()
 
                         // Account Section
-                        VStack(spacing: 0) {
-                            SectionHeader(title: "الحساب")
-
-                            SettingsActionRow(
-                                icon: "rectangle.portrait.and.arrow.right",
-                                title: "تسجيل الخروج",
-                                iconColor: .secondaryText
-                            ) {
+                        AccountSection(
+                            onSignOut: {
                                 Task {
                                     await authManager.signOut()
                                     dismiss()
                                 }
-                            }
-
-                            Divider()
-                                .background(Color.tertiaryBackground)
-                                .padding(.horizontal, 20)
-
-                            SettingsActionRow(
-                                icon: "trash.fill",
-                                title: "حذف الحساب",
-                                iconColor: .danger
-                            ) {
+                            },
+                            onDeleteAccount: {
                                 showDeleteAccountAlert = true
                             }
-                        }
+                        )
 
                         // App Info
-                        VStack(spacing: 12) {
-                            Text("الإصدار")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.tertiaryText)
-
-                            Text(appVersion)
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.secondaryText)
-                        }
-                        .padding(.top, 20)
-                        .padding(.bottom, 40)
+                        AppVersionSection(version: appVersion)
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
@@ -311,5 +214,153 @@ struct SettingsActionRow: View {
             .padding(.vertical, 16)
             .background(Color.cardBackground)
         }
+    }
+}
+
+// User Profile Section
+struct UserProfileSection: View {
+    let user: Supabase.User?
+
+    var body: some View {
+        if let user = user {
+            VStack(spacing: 16) {
+                // Avatar
+                ZStack {
+                    Circle()
+                        .fill(Color.accentDim)
+                        .frame(width: 80, height: 80)
+                        .blur(radius: 20)
+
+                    Circle()
+                        .fill(Color.cardBackground)
+                        .frame(width: 80, height: 80)
+                        .overlay(
+                            Circle()
+                                .strokeBorder(Color.accent, lineWidth: 2)
+                        )
+
+                    Text(String(user.email?.prefix(1) ?? "U").uppercased())
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.accent)
+                }
+
+                VStack(spacing: 6) {
+                    if let fullName = user.userMetadata["full_name"] as? String {
+                        Text(fullName)
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.primaryText)
+                    }
+
+                    if let email = user.email {
+                        Text(email)
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(.secondaryText)
+                    }
+                }
+            }
+            .padding(.vertical, 20)
+        }
+    }
+}
+
+// Legal Section
+struct LegalSection: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            SectionHeader(title: "القانونية والخصوصية")
+
+            SettingsLinkRow(
+                icon: "shield.checkered",
+                title: "سياسة الخصوصية",
+                iconColor: .accent
+            ) {
+                if let url = URL(string: "https://ecomclub.net/privacy-policy") {
+                    UIApplication.shared.open(url)
+                }
+            }
+
+            Divider()
+                .background(Color.tertiaryBackground)
+                .padding(.horizontal, 20)
+
+            SettingsLinkRow(
+                icon: "doc.text",
+                title: "شروط الاستخدام",
+                iconColor: .accent
+            ) {
+                if let url = URL(string: "https://ecomclub.net/terms") {
+                    UIApplication.shared.open(url)
+                }
+            }
+        }
+    }
+}
+
+// Support Section
+struct SupportSection: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            SectionHeader(title: "الدعم والمساعدة")
+
+            SettingsLinkRow(
+                icon: "envelope.fill",
+                title: "تواصل معنا",
+                subtitle: "support@econabdullah.com",
+                iconColor: .premium
+            ) {
+                if let url = URL(string: "mailto:support@econabdullah.com") {
+                    UIApplication.shared.open(url)
+                }
+            }
+        }
+    }
+}
+
+// Account Section
+struct AccountSection: View {
+    let onSignOut: () -> Void
+    let onDeleteAccount: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            SectionHeader(title: "الحساب")
+
+            SettingsActionRow(
+                icon: "rectangle.portrait.and.arrow.right",
+                title: "تسجيل الخروج",
+                iconColor: .secondaryText,
+                action: onSignOut
+            )
+
+            Divider()
+                .background(Color.tertiaryBackground)
+                .padding(.horizontal, 20)
+
+            SettingsActionRow(
+                icon: "trash.fill",
+                title: "حذف الحساب",
+                iconColor: .danger,
+                action: onDeleteAccount
+            )
+        }
+    }
+}
+
+// App Version Section
+struct AppVersionSection: View {
+    let version: String
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Text("الإصدار")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.tertiaryText)
+
+            Text(version)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.secondaryText)
+        }
+        .padding(.top, 20)
+        .padding(.bottom, 40)
     }
 }
