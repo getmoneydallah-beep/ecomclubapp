@@ -1,12 +1,31 @@
 import SwiftUI
 
+enum CourseFilter: String, CaseIterable {
+    case all = "الكل"
+    case free = "مجاني"
+    case paid = "مدفوع"
+}
+
 struct CoursesListView: View {
     @EnvironmentObject var authManager: AuthManager
     @State private var courses: [Course] = []
     @State private var isLoading = false
     @State private var errorMessage: String?
+    @State private var selectedFilter: CourseFilter = .all
+    @State private var showSettings = false
 
     private let coursesService = CoursesService()
+
+    private var filteredCourses: [Course] {
+        switch selectedFilter {
+        case .all:
+            return courses
+        case .free:
+            return courses.filter { $0.isFree }
+        case .paid:
+            return courses.filter { !$0.isFree }
+        }
+    }
 
     var body: some View {
         NavigationView {
@@ -35,17 +54,49 @@ struct CoursesListView: View {
                     } else if courses.isEmpty {
                         PremiumEmptyStateView()
                     } else {
-                        ScrollView(showsIndicators: false) {
-                            VStack(spacing: 20) {
-                                ForEach(courses) { course in
-                                    NavigationLink(destination: CourseDetailView(course: course)) {
-                                        PremiumCourseCard(course: course)
+                        VStack(spacing: 0) {
+                            // Filter Tabs
+                            HStack(spacing: 12) {
+                                ForEach(CourseFilter.allCases, id: \.self) { filter in
+                                    FilterTab(
+                                        title: filter.rawValue,
+                                        isSelected: selectedFilter == filter
+                                    ) {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                            selectedFilter = filter
+                                        }
                                     }
-                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
                             .padding(.horizontal, 20)
                             .padding(.vertical, 16)
+
+                            // Courses List
+                            ScrollView(showsIndicators: false) {
+                                VStack(spacing: 20) {
+                                    ForEach(filteredCourses) { course in
+                                        NavigationLink(destination: CourseDetailView(course: course)) {
+                                            PremiumCourseCard(course: course)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                    }
+
+                                    if filteredCourses.isEmpty {
+                                        VStack(spacing: 16) {
+                                            Image(systemName: "tray.fill")
+                                                .font(.system(size: 40, weight: .ultraLight))
+                                                .foregroundColor(.tertiaryText)
+                                            Text("لا توجد دورات \(selectedFilter.rawValue)")
+                                                .font(.system(size: 15, weight: .medium))
+                                                .foregroundColor(.secondaryText)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 60)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                            }
                         }
                     }
                 }
@@ -54,19 +105,17 @@ struct CoursesListView: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
-                            Task {
-                                await authManager.signOut()
-                            }
+                            showSettings = true
                         }) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "rectangle.portrait.and.arrow.right")
-                                    .font(.system(size: 15, weight: .medium))
-                                Text("خروج")
-                                    .font(.system(size: 15, weight: .medium))
-                            }
-                            .foregroundColor(.accent)
+                            Image(systemName: "gearshape.fill")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.accent)
                         }
                     }
+                }
+                .sheet(isPresented: $showSettings) {
+                    SettingsView()
+                        .environmentObject(authManager)
                 }
             }
             .environment(\.layoutDirection, .rightToLeft)
@@ -310,5 +359,29 @@ struct PremiumErrorView: View {
             }
         }
         .frame(maxHeight: .infinity)
+    }
+}
+
+// Filter Tab Component
+struct FilterTab: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(isSelected ? .primaryBackground : .secondaryText)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(isSelected ? Color.accent : Color.cardBackground)
+                .cornerRadius(20)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .strokeBorder(isSelected ? Color.clear : Color.tertiaryBackground, lineWidth: 1)
+                )
+        }
+        .shadow(color: isSelected ? Color.accentGlow : Color.clear, radius: 8, x: 0, y: 4)
     }
 }

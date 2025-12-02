@@ -73,4 +73,36 @@ class AuthManager: ObservableObject {
             self.errorMessage = error.localizedDescription
         }
     }
+
+    func deleteAccount(userId: UUID) async throws {
+        // Delete user data from profiles table
+        try await supabase
+            .from("profiles")
+            .delete()
+            .eq("id", value: userId.uuidString)
+            .execute()
+
+        // Delete user enrollments
+        try await supabase
+            .from("course_enrollments")
+            .delete()
+            .eq("user_id", value: userId.uuidString)
+            .execute()
+
+        // Delete user subscriptions
+        try await supabase
+            .from("subscriptions")
+            .delete()
+            .eq("user_id", value: userId.uuidString)
+            .execute()
+
+        // Sign out and delete auth user
+        try await supabase.auth.signOut()
+
+        // Note: Actual user deletion from auth.users should be handled server-side
+        // via Supabase Edge Function or Database Trigger for security
+
+        self.isAuthenticated = false
+        self.currentUser = nil
+    }
 }

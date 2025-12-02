@@ -121,6 +121,42 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, 28)
 
+                    // Terms & Privacy Consent
+                    VStack(spacing: 12) {
+                        Text("بالمتابعة، أنت توافق على")
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundColor(.secondaryText)
+
+                        HStack(spacing: 6) {
+                            Button(action: {
+                                if let url = URL(string: "https://ecomclub.net/terms") {
+                                    UIApplication.shared.open(url)
+                                }
+                            }) {
+                                Text("شروط الاستخدام")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(.accent)
+                                    .underline()
+                            }
+
+                            Text("و")
+                                .font(.system(size: 13, weight: .regular))
+                                .foregroundColor(.secondaryText)
+
+                            Button(action: {
+                                if let url = URL(string: "https://ecomclub.net/privacy-policy") {
+                                    UIApplication.shared.open(url)
+                                }
+                            }) {
+                                Text("سياسة الخصوصية")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(.accent)
+                                    .underline()
+                            }
+                        }
+                    }
+                    .padding(.top, 20)
+
                     // Toggle Sign Up/Sign In
                     Button(action: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
