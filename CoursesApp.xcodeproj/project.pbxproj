@@ -12,6 +12,7 @@
 		AA0000000000000000000003 /* CoursesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000013 /* CoursesListView.swift */; };
 		AA0000000000000000000004 /* CourseDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000014 /* CourseDetailView.swift */; };
 		AA0000000000000000000005 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* VideoPlayerView.swift */; };
+		AA000000000000000000001E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000002E /* SettingsView.swift */; };
 		AA0000000000000000000006 /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000016 /* Course.swift */; };
 		AA0000000000000000000007 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000017 /* AuthManager.swift */; };
 		AA0000000000000000000008 /* CoursesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000018 /* CoursesService.swift */; };
@@ -26,6 +27,7 @@
 		AA0000000000000000000013 /* CoursesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursesListView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000014 /* CourseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseDetailView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000015 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
+		AA000000000000000000002E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000016 /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
 		AA0000000000000000000017 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000018 /* CoursesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursesService.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 				AA0000000000000000000013 /* CoursesListView.swift */,
 				AA0000000000000000000014 /* CourseDetailView.swift */,
 				AA0000000000000000000015 /* VideoPlayerView.swift */,
+				AA000000000000000000002E /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -186,6 +189,7 @@
 				AA0000000000000000000003 /* CoursesListView.swift in Sources */,
 				AA0000000000000000000004 /* CourseDetailView.swift in Sources */,
 				AA0000000000000000000005 /* VideoPlayerView.swift in Sources */,
+				AA000000000000000000001E /* SettingsView.swift in Sources */,
 				AA0000000000000000000006 /* Course.swift in Sources */,
 				AA0000000000000000000007 /* AuthManager.swift in Sources */,
 				AA0000000000000000000008 /* CoursesService.swift in Sources */,
