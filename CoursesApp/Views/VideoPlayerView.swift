@@ -125,8 +125,6 @@ struct PremiumVideoPlayerView: View {
                                 }
 
                                 HTMLTextView(htmlString: description)
-                                    .font(.system(size: 15, weight: .regular))
-                                    .foregroundColor(.secondaryText)
                                     .padding(18)
                                     .background(Color.cardBackground)
                                     .cornerRadius(16)
@@ -136,77 +134,6 @@ struct PremiumVideoPlayerView: View {
                                     )
                             }
                         }
-
-                        // Playback Controls Card
-                        VStack(alignment: .leading, spacing: 16) {
-                            HStack(spacing: 10) {
-                                Image(systemName: "waveform")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.accent)
-                                Text("التحكم في التشغيل")
-                                    .font(.system(size: 18, weight: .bold))
-                                    .foregroundColor(.primaryText)
-                            }
-
-                            HStack(spacing: 24) {
-                                Spacer()
-
-                                // Rewind 10s
-                                PremiumControlButton(
-                                    icon: "gobackward.10",
-                                    size: 60
-                                ) {
-                                    if let player = player {
-                                        let newTime = CMTimeAdd(player.currentTime(), CMTime(seconds: -10, preferredTimescale: 1))
-                                        player.seek(to: newTime)
-                                    }
-                                }
-
-                                // Play/Pause
-                                PremiumControlButton(
-                                    icon: isPlaying ? "pause.circle.fill" : "play.circle.fill",
-                                    size: 80,
-                                    isPrimary: true
-                                ) {
-                                    if let player = player {
-                                        if isPlaying {
-                                            player.pause()
-                                        } else {
-                                            player.play()
-                                        }
-                                        isPlaying.toggle()
-                                    }
-                                }
-
-                                // Forward 10s
-                                PremiumControlButton(
-                                    icon: "goforward.10",
-                                    size: 60
-                                ) {
-                                    if let player = player {
-                                        let newTime = CMTimeAdd(player.currentTime(), CMTime(seconds: 10, preferredTimescale: 1))
-                                        player.seek(to: newTime)
-                                    }
-                                }
-
-                                Spacer()
-                            }
-                        }
-                        .padding(22)
-                        .background(Color.cardBackground)
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .strokeBorder(
-                                    LinearGradient(
-                                        colors: [Color.accentDim, Color.clear],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 1
-                                )
-                        )
-                        .shadow(color: Color.accentGlow.opacity(0.08), radius: 16, x: 0, y: 6)
                     }
                     .padding(24)
                 }
@@ -216,28 +143,5 @@ struct PremiumVideoPlayerView: View {
         .navigationBarHidden(true)
         .environment(\.layoutDirection, .rightToLeft)
         .preferredColorScheme(.dark)
-    }
-}
-
-// Premium Control Button Component
-struct PremiumControlButton: View {
-    let icon: String
-    var size: CGFloat = 60
-    var isPrimary: Bool = false
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            ZStack {
-                Circle()
-                    .fill(isPrimary ? Color.accentDim : Color.tertiaryBackground)
-                    .frame(width: size, height: size)
-
-                Image(systemName: icon)
-                    .font(.system(size: size * 0.4, weight: .medium))
-                    .foregroundColor(isPrimary ? .accent : .primaryText)
-            }
-            .shadow(color: isPrimary ? Color.accentGlow.opacity(0.3) : Color.clear, radius: 12, x: 0, y: 4)
-        }
     }
 }

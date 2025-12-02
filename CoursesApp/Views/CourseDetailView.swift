@@ -40,7 +40,7 @@ struct CourseDetailView: View {
                                     EmptyView()
                                 }
                             }
-                            .frame(height: 300)
+                            .frame(height: 220)
                             .clipped()
                         }
 
@@ -50,7 +50,7 @@ struct CourseDetailView: View {
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: 300)
+                        .frame(height: 220)
 
                         // Status badge
                         HStack {
@@ -85,20 +85,20 @@ struct CourseDetailView: View {
                     }
 
                     // Content Card
-                    VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 20) {
                         // Title
                         Text(course.titleAr)
-                            .font(.system(size: 30, weight: .bold))
+                            .font(.system(size: 26, weight: .bold))
                             .foregroundColor(.primaryText)
                             .multilineTextAlignment(.leading)
 
                         // Description
                         if let description = course.descriptionAr {
                             Text(description)
-                                .font(.system(size: 15, weight: .regular))
+                                .font(.system(size: 14, weight: .regular))
                                 .foregroundColor(.secondaryText)
                                 .multilineTextAlignment(.leading)
-                                .lineSpacing(4)
+                                .lineSpacing(3)
                         }
 
                         // Metadata pills
@@ -124,11 +124,11 @@ struct CourseDetailView: View {
                         Rectangle()
                             .fill(Color.tertiaryBackground)
                             .frame(height: 1)
-                            .padding(.vertical, 8)
+                            .padding(.vertical, 4)
 
                         // Course Content Header
                         Text("محتوى الدورة")
-                            .font(.system(size: 24, weight: .bold))
+                            .font(.system(size: 20, weight: .bold))
                             .foregroundColor(.primaryText)
 
                         // Loading / Error / Content
@@ -153,7 +153,7 @@ struct CourseDetailView: View {
                             }
                             .padding(.vertical, 30)
                         } else {
-                            VStack(spacing: 16) {
+                            VStack(spacing: 14) {
                                 ForEach(sections) { section in
                                     PremiumSectionView(
                                         section: section,
@@ -165,9 +165,9 @@ struct CourseDetailView: View {
                             }
                         }
                     }
-                    .padding(24)
+                    .padding(20)
                     .background(Color.primaryBackground)
-                    .offset(y: -40)
+                    .offset(y: -30)
                 }
             }
             .ignoresSafeArea(edges: .top)

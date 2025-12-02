@@ -61,6 +61,7 @@ struct HTMLTextView: View {
             Text(attributedString)
         } else {
             Text(htmlString)
+                .foregroundColor(.primaryText)
                 .onAppear {
                     convertHTMLToAttributedString()
                 }
@@ -70,13 +71,51 @@ struct HTMLTextView: View {
     private func convertHTMLToAttributedString() {
         guard let data = htmlString.data(using: .utf8) else { return }
 
+        // Add CSS styling to force white text color
+        let styledHTML = """
+        <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #FFFFFF !important;
+        }
+        p, div, span, li, ul, ol {
+            color: #FFFFFF !important;
+        }
+        strong, b {
+            color: #FFFFFF !important;
+            font-weight: 600;
+        }
+        a {
+            color: #00FFF0 !important;
+            text-decoration: underline;
+        }
+        ul, ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        li {
+            margin: 4px 0;
+        }
+        </style>
+        \(htmlString)
+        """
+
+        guard let styledData = styledHTML.data(using: .utf8) else { return }
+
         let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
             .documentType: NSAttributedString.DocumentType.html,
             .characterEncoding: String.Encoding.utf8.rawValue
         ]
 
-        if let nsAttributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) {
-            attributedString = AttributedString(nsAttributedString)
+        if let nsAttributedString = try? NSAttributedString(data: styledData, options: options, documentAttributes: nil) {
+            var attrString = AttributedString(nsAttributedString)
+
+            // Ensure white text color for all text
+            attrString.foregroundColor = .primaryText
+
+            attributedString = attrString
         }
     }
 }
