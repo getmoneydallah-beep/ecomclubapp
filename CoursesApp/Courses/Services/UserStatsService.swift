@@ -22,7 +22,7 @@ class UserStatsService {
             .from("user_challenges")
             .select("id")
             .eq("user_id", value: userId.uuidString)
-            .is("completed_at", value: "null")
+            .isNull("completed_at")
             .execute()
 
         let challengesDecoder = JSONDecoder()
