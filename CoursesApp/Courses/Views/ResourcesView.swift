@@ -84,10 +84,22 @@ struct ResourcesView: View {
             Spacer()
         } else if filteredResources.isEmpty {
             Spacer()
-            PremiumEmptyStateView(
-                icon: "folder",
-                message: "لا توجد موارد في هذه الفئة"
-            )
+            VStack(spacing: 24) {
+                ZStack {
+                    Circle()
+                        .fill(Color.accentDim)
+                        .frame(width: 100, height: 100)
+                        .blur(radius: 30)
+
+                    Image(systemName: "folder")
+                        .font(.system(size: 50, weight: .ultraLight))
+                        .foregroundColor(.tertiaryText)
+                }
+
+                Text("لا توجد موارد في هذه الفئة")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.secondaryText)
+            }
             Spacer()
         } else {
             resourcesListView
