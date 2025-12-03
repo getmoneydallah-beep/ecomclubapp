@@ -27,13 +27,21 @@ class CommunityService {
     }
 
     func createWin(userId: UUID, titleAr: String, descriptionAr: String?, winType: WinType) async throws {
-        let newWin: [String: Any?] = [
-            "user_id": userId.uuidString,
-            "title_ar": titleAr,
-            "description_ar": descriptionAr,
-            "win_type": winType.rawValue,
-            "is_approved": false
-        ]
+        struct NewWin: Encodable {
+            let user_id: String
+            let title_ar: String
+            let description_ar: String?
+            let win_type: String
+            let is_approved: Bool
+        }
+
+        let newWin = NewWin(
+            user_id: userId.uuidString,
+            title_ar: titleAr,
+            description_ar: descriptionAr,
+            win_type: winType.rawValue,
+            is_approved: false
+        )
 
         _ = try await supabase
             .from("community_wins")
@@ -60,11 +68,17 @@ class CommunityService {
     }
 
     func addComment(winId: UUID, userId: UUID, content: String) async throws {
-        let newComment: [String: Any] = [
-            "win_id": winId.uuidString,
-            "user_id": userId.uuidString,
-            "content": content
-        ]
+        struct NewComment: Encodable {
+            let win_id: String
+            let user_id: String
+            let content: String
+        }
+
+        let newComment = NewComment(
+            win_id: winId.uuidString,
+            user_id: userId.uuidString,
+            content: content
+        )
 
         _ = try await supabase
             .from("community_comments")
@@ -73,11 +87,17 @@ class CommunityService {
     }
 
     func addReaction(winId: UUID, userId: UUID, reactionType: String = "like") async throws {
-        let newReaction: [String: Any] = [
-            "win_id": winId.uuidString,
-            "user_id": userId.uuidString,
-            "reaction_type": reactionType
-        ]
+        struct NewReaction: Encodable {
+            let win_id: String
+            let user_id: String
+            let reaction_type: String
+        }
+
+        let newReaction = NewReaction(
+            win_id: winId.uuidString,
+            user_id: userId.uuidString,
+            reaction_type: reactionType
+        )
 
         _ = try await supabase
             .from("community_reactions")
