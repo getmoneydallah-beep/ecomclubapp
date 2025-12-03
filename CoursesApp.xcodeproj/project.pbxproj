@@ -19,6 +19,25 @@
 		AA0000000000000000000009 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000019 /* SupabaseClient.swift */; };
 		AA0000000000000000000010 /* CoursesApp.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000020 /* CoursesApp.xcassets */; };
 		AA0000000000000000000030 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000029 /* Supabase */; };
+		BAAB445234D94EB892E6FC6B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A69D4764F0940EDB33ED354 /* Models.swift */; };
+		B41E6161328C4F568A6A8B24 /* AnnouncementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3456D41A55843DD9A82B1F3 /* AnnouncementsService.swift */; };
+		F2FD9A7743D34518882D07CE /* ChallengesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C288C62EDE8C42A09432D375 /* ChallengesService.swift */; };
+		9CBF2EED0DDE4450A1FCC566 /* CommunityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431B86AC33A6498CA8A5FC38 /* CommunityService.swift */; };
+		473C6AFA65214FFEA3BEFF52 /* LiveEventsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F470761683834D25BAE05CE1 /* LiveEventsService.swift */; };
+		61D8BF310A2046249ECA679F /* ResourcesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD983B8629E4413EAB1D8978 /* ResourcesService.swift */; };
+		71E91A5617B0466AAEF55CC6 /* AffiliatesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B79E4D9890243CA830B5196 /* AffiliatesService.swift */; };
+		D68463E61C6144E0BA1C1B95 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FC7C5571E747549A1FE771 /* SubscriptionManager.swift */; };
+		E92D858B2B844E58B81F1311 /* UserStatsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F22E92A9124582AE193AA5 /* UserStatsService.swift */; };
+		97BF901803044AFF878E285F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42241153F94E456581B1D498 /* HomeView.swift */; };
+		8B146B6274EF4F3ABBBFBB81 /* ResourcesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 629654592627426DB479E7A0 /* ResourcesView.swift */; };
+		CD2B7E06064E45E989AD6E10 /* BusinessCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E286000AD0C14D809C3A9F61 /* BusinessCardView.swift */; };
+		9F894E99A71844F6B0CF5CCC /* CreateCommunityWinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397A94CD7F584DB3A1A69C77 /* CreateCommunityWinView.swift */; };
+		7D9F37B9EB994592918CF0F9 /* AnnouncementsBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE7CE3EA8BD4ACE9DDFC78F /* AnnouncementsBanner.swift */; };
+		394A776F4F534581B3BF08B3 /* UserStatsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21239D6D046744069AE5C168 /* UserStatsCard.swift */; };
+		E3478A6232E343A5BC22BCDB /* ChallengesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8223EEA6D54CBFB5762CDF /* ChallengesSection.swift */; };
+		85EC2A2FDEAE4188A1A051F4 /* LiveEventsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462BC132A25B4FB196D27A42 /* LiveEventsSection.swift */; };
+		A390FAE5E6D0401F8BB83DBA /* CommunityWinsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213BB74814224F2793D0D62A /* CommunityWinsSection.swift */; };
+		81CDDE1D328E4F48B821D378 /* CoursesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619FA545A01949D4A43EEBD4 /* CoursesSection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +54,25 @@
 		AA0000000000000000000020 /* CoursesApp.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = CoursesApp.xcassets; sourceTree = "<group>"; };
 		AA0000000000000000000021 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA0000000000000000000022 /* CoursesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoursesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A69D4764F0940EDB33ED354 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A3456D41A55843DD9A82B1F3 /* AnnouncementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsService.swift; sourceTree = "<group>"; };
+		C288C62EDE8C42A09432D375 /* ChallengesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesService.swift; sourceTree = "<group>"; };
+		431B86AC33A6498CA8A5FC38 /* CommunityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityService.swift; sourceTree = "<group>"; };
+		F470761683834D25BAE05CE1 /* LiveEventsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventsService.swift; sourceTree = "<group>"; };
+		CD983B8629E4413EAB1D8978 /* ResourcesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourcesService.swift; sourceTree = "<group>"; };
+		4B79E4D9890243CA830B5196 /* AffiliatesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AffiliatesService.swift; sourceTree = "<group>"; };
+		F3FC7C5571E747549A1FE771 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		B4F22E92A9124582AE193AA5 /* UserStatsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatsService.swift; sourceTree = "<group>"; };
+		42241153F94E456581B1D498 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		629654592627426DB479E7A0 /* ResourcesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourcesView.swift; sourceTree = "<group>"; };
+		E286000AD0C14D809C3A9F61 /* BusinessCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessCardView.swift; sourceTree = "<group>"; };
+		397A94CD7F584DB3A1A69C77 /* CreateCommunityWinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCommunityWinView.swift; sourceTree = "<group>"; };
+		6DE7CE3EA8BD4ACE9DDFC78F /* AnnouncementsBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsBanner.swift; sourceTree = "<group>"; };
+		21239D6D046744069AE5C168 /* UserStatsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatsCard.swift; sourceTree = "<group>"; };
+		1C8223EEA6D54CBFB5762CDF /* ChallengesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesSection.swift; sourceTree = "<group>"; };
+		462BC132A25B4FB196D27A42 /* LiveEventsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventsSection.swift; sourceTree = "<group>"; };
+		213BB74814224F2793D0D62A /* CommunityWinsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityWinsSection.swift; sourceTree = "<group>"; };
+		619FA545A01949D4A43EEBD4 /* CoursesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursesSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +102,7 @@
 				AA0000000000000000000027 /* Views */,
 				AA0000000000000000000028 /* Models */,
 				AA0000000000000000000031 /* Services */,
+				2F44B7BFEEC146A0B740980C /* Courses */,
 				AA0000000000000000000020 /* CoursesApp.xcassets */,
 				AA0000000000000000000021 /* Info.plist */,
 			);
@@ -96,6 +135,64 @@
 				AA0000000000000000000016 /* Course.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		2F44B7BFEEC146A0B740980C /* Courses */ = {
+			isa = PBXGroup;
+			children = (
+				A4CA17075C104A708908D316 /* Models */,
+				3624B6C70E2943B4A550F78D /* Services */,
+				B0B64DF80EE641BF85833BAE /* Views */,
+			);
+			path = Courses;
+			sourceTree = "<group>";
+		};
+		A4CA17075C104A708908D316 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1A69D4764F0940EDB33ED354 /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		3624B6C70E2943B4A550F78D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A3456D41A55843DD9A82B1F3 /* AnnouncementsService.swift */,
+				C288C62EDE8C42A09432D375 /* ChallengesService.swift */,
+				431B86AC33A6498CA8A5FC38 /* CommunityService.swift */,
+				F470761683834D25BAE05CE1 /* LiveEventsService.swift */,
+				CD983B8629E4413EAB1D8978 /* ResourcesService.swift */,
+				4B79E4D9890243CA830B5196 /* AffiliatesService.swift */,
+				F3FC7C5571E747549A1FE771 /* SubscriptionManager.swift */,
+				B4F22E92A9124582AE193AA5 /* UserStatsService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		B0B64DF80EE641BF85833BAE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				42241153F94E456581B1D498 /* HomeView.swift */,
+				629654592627426DB479E7A0 /* ResourcesView.swift */,
+				E286000AD0C14D809C3A9F61 /* BusinessCardView.swift */,
+				397A94CD7F584DB3A1A69C77 /* CreateCommunityWinView.swift */,
+				F78215219D2240F8ABFAC2B4 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F78215219D2240F8ABFAC2B4 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				6DE7CE3EA8BD4ACE9DDFC78F /* AnnouncementsBanner.swift */,
+				21239D6D046744069AE5C168 /* UserStatsCard.swift */,
+				1C8223EEA6D54CBFB5762CDF /* ChallengesSection.swift */,
+				462BC132A25B4FB196D27A42 /* LiveEventsSection.swift */,
+				213BB74814224F2793D0D62A /* CommunityWinsSection.swift */,
+				619FA545A01949D4A43EEBD4 /* CoursesSection.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		AA0000000000000000000031 /* Services */ = {
@@ -194,6 +291,25 @@
 				AA0000000000000000000007 /* AuthManager.swift in Sources */,
 				AA0000000000000000000008 /* CoursesService.swift in Sources */,
 				AA0000000000000000000009 /* SupabaseClient.swift in Sources */,
+				BAAB445234D94EB892E6FC6B /* Models.swift in Sources */,
+				B41E6161328C4F568A6A8B24 /* AnnouncementsService.swift in Sources */,
+				F2FD9A7743D34518882D07CE /* ChallengesService.swift in Sources */,
+				9CBF2EED0DDE4450A1FCC566 /* CommunityService.swift in Sources */,
+				473C6AFA65214FFEA3BEFF52 /* LiveEventsService.swift in Sources */,
+				61D8BF310A2046249ECA679F /* ResourcesService.swift in Sources */,
+				71E91A5617B0466AAEF55CC6 /* AffiliatesService.swift in Sources */,
+				D68463E61C6144E0BA1C1B95 /* SubscriptionManager.swift in Sources */,
+				E92D858B2B844E58B81F1311 /* UserStatsService.swift in Sources */,
+				97BF901803044AFF878E285F /* HomeView.swift in Sources */,
+				8B146B6274EF4F3ABBBFBB81 /* ResourcesView.swift in Sources */,
+				CD2B7E06064E45E989AD6E10 /* BusinessCardView.swift in Sources */,
+				9F894E99A71844F6B0CF5CCC /* CreateCommunityWinView.swift in Sources */,
+				7D9F37B9EB994592918CF0F9 /* AnnouncementsBanner.swift in Sources */,
+				394A776F4F534581B3BF08B3 /* UserStatsCard.swift in Sources */,
+				E3478A6232E343A5BC22BCDB /* ChallengesSection.swift in Sources */,
+				85EC2A2FDEAE4188A1A051F4 /* LiveEventsSection.swift in Sources */,
+				A390FAE5E6D0401F8BB83DBA /* CommunityWinsSection.swift in Sources */,
+				81CDDE1D328E4F48B821D378 /* CoursesSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
