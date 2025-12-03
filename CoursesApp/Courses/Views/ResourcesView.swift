@@ -24,75 +24,15 @@ struct ResourcesView: View {
                 Color.primaryBackground.ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    // Category Filters
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            CategoryFilterButton(
-                                title: "الكل",
-                                isSelected: selectedCategory == nil,
-                                action: { selectedCategory = nil }
-                            )
-
-                            ForEach(ResourceCategory.allCases, id: \.self) { category in
-                                CategoryFilterButton(
-                                    title: category.displayName,
-                                    isSelected: selectedCategory == category,
-                                    action: { selectedCategory = category }
-                                )
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 16)
-                    }
-                    .background(Color.secondaryBackground)
-
-                    // Resources Content
-                    if isLoading {
-                        Spacer()
-                        ProgressView()
-                            .tint(Color.accent)
-                        Spacer()
-                    } else if let error = errorMessage {
-                        Spacer()
-                        PremiumErrorView(message: error) {
-                            Task { await loadResources() }
-                        }
-                        Spacer()
-                    } else if filteredResources.isEmpty {
-                        Spacer()
-                        PremiumEmptyStateView(
-                            icon: "folder",
-                            message: "لا توجد موارد في هذه الفئة"
-                        )
-                        Spacer()
-                    } else {
-                        ScrollView {
-                            LazyVStack(spacing: 12) {
-                                ForEach(filteredResources) { resource in
-                                    ResourceCard(
-                                        resource: resource,
-                                        hasSubscription: subscriptionManager.hasActiveSubscription,
-                                        onTap: {
-                                            openResource(resource)
-                                        }
-                                    )
-                                }
-                            }
-                            .padding()
-                        }
-                    }
+                    categoryFiltersView
+                    resourcesContentView
                 }
             }
             .navigationTitle("المصادر")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        showingSettings = true
-                    } label: {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(Color.accent)
-                    }
+                    settingsButton
                 }
             }
             .sheet(isPresented: $showingSettings) {
@@ -104,6 +44,80 @@ struct ResourcesView: View {
             }
         }
         .environment(\.layoutDirection, .rightToLeft)
+    }
+
+    private var categoryFiltersView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                CategoryFilterButton(
+                    title: "الكل",
+                    isSelected: selectedCategory == nil,
+                    action: { selectedCategory = nil }
+                )
+
+                ForEach(ResourceCategory.allCases, id: \.self) { category in
+                    CategoryFilterButton(
+                        title: category.displayName,
+                        isSelected: selectedCategory == category,
+                        action: { selectedCategory = category }
+                    )
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 16)
+        }
+        .background(Color.secondaryBackground)
+    }
+
+    @ViewBuilder
+    private var resourcesContentView: some View {
+        if isLoading {
+            Spacer()
+            ProgressView()
+                .tint(Color.accent)
+            Spacer()
+        } else if let error = errorMessage {
+            Spacer()
+            PremiumErrorView(message: error) {
+                Task { await loadResources() }
+            }
+            Spacer()
+        } else if filteredResources.isEmpty {
+            Spacer()
+            PremiumEmptyStateView(
+                icon: "folder",
+                message: "لا توجد موارد في هذه الفئة"
+            )
+            Spacer()
+        } else {
+            resourcesListView
+        }
+    }
+
+    private var resourcesListView: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(filteredResources) { resource in
+                    ResourceCard(
+                        resource: resource,
+                        hasSubscription: subscriptionManager.hasActiveSubscription,
+                        onTap: {
+                            openResource(resource)
+                        }
+                    )
+                }
+            }
+            .padding()
+        }
+    }
+
+    private var settingsButton: some View {
+        Button {
+            showingSettings = true
+        } label: {
+            Image(systemName: "gearshape.fill")
+                .foregroundColor(Color.accent)
+        }
     }
 
     private func loadResources() async {
