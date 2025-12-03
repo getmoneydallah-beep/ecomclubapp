@@ -17,17 +17,20 @@ class UserStatsService {
         let enrollments = try enrollmentsDecoder.decode([[String: String]].self, from: enrollmentsResponse.data)
         let completedCourses = enrollments.count
 
-        // Fetch active challenges count
+        // Fetch all user challenges and filter active ones
         let challengesResponse = try await supabase
             .from("user_challenges")
-            .select("id")
+            .select("id, completed_at")
             .eq("user_id", value: userId.uuidString)
-            .isNull("completed_at")
             .execute()
 
-        let challengesDecoder = JSONDecoder()
-        let activeChallenges = try challengesDecoder.decode([[String: String]].self, from: challengesResponse.data)
-        let activeChallengesCount = activeChallenges.count
+        struct ChallengeRow: Codable {
+            let id: String
+            let completed_at: String?
+        }
+
+        let allChallenges = try JSONDecoder().decode([ChallengeRow].self, from: challengesResponse.data)
+        let activeChallengesCount = allChallenges.filter { $0.completed_at == nil }.count
 
         // Fetch community wins count
         let winsResponse = try await supabase
