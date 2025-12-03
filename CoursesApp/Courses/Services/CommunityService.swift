@@ -6,14 +6,10 @@ class CommunityService {
     private let supabase = SupabaseClient.shared.client
 
     func fetchApprovedWins(limit: Int = 20) async throws -> [CommunityWin] {
+        // Simplified query without aggregations - just fetch basic data
         let response = try await supabase
             .from("community_wins")
-            .select("""
-                *,
-                profiles!inner(full_name, avatar_url),
-                reactions_count:community_reactions(count),
-                comments_count:community_comments(count)
-            """)
+            .select("*")
             .eq("is_approved", value: true)
             .order("created_at", ascending: false)
             .limit(limit)
@@ -50,12 +46,10 @@ class CommunityService {
     }
 
     func fetchComments(winId: UUID) async throws -> [CommunityComment] {
+        // Simplified query without nested profiles
         let response = try await supabase
             .from("community_comments")
-            .select("""
-                *,
-                profiles!inner(full_name, avatar_url)
-            """)
+            .select("*")
             .eq("win_id", value: winId.uuidString)
             .order("created_at", ascending: true)
             .execute()

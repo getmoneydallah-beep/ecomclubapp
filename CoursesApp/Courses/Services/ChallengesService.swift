@@ -6,12 +6,10 @@ class ChallengesService {
     private let supabase = SupabaseClient.shared.client
 
     func fetchActiveChallenges() async throws -> [Challenge] {
+        // Simplified query without nested tasks
         let response = try await supabase
             .from("challenges")
-            .select("""
-                *,
-                tasks:challenge_tasks(*)
-            """)
+            .select("*")
             .eq("is_active", value: true)
             .order("created_at", ascending: false)
             .execute()
