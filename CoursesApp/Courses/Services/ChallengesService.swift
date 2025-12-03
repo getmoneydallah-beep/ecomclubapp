@@ -39,11 +39,17 @@ class ChallengesService {
     }
 
     func startChallenge(userId: UUID, challengeId: UUID) async throws {
-        let newUserChallenge: [String: Any] = [
-            "user_id": userId.uuidString,
-            "challenge_id": challengeId.uuidString,
-            "progress": 0
-        ]
+        struct NewUserChallenge: Encodable {
+            let user_id: String
+            let challenge_id: String
+            let progress: Int
+        }
+
+        let newUserChallenge = NewUserChallenge(
+            user_id: userId.uuidString,
+            challenge_id: challengeId.uuidString,
+            progress: 0
+        )
 
         _ = try await supabase
             .from("user_challenges")
@@ -52,10 +58,15 @@ class ChallengesService {
     }
 
     func completeTask(userChallengeId: UUID, taskId: UUID) async throws {
-        let newTaskCompletion: [String: Any] = [
-            "user_challenge_id": userChallengeId.uuidString,
-            "task_id": taskId.uuidString
-        ]
+        struct NewTaskCompletion: Encodable {
+            let user_challenge_id: String
+            let task_id: String
+        }
+
+        let newTaskCompletion = NewTaskCompletion(
+            user_challenge_id: userChallengeId.uuidString,
+            task_id: taskId.uuidString
+        )
 
         _ = try await supabase
             .from("user_challenge_tasks")

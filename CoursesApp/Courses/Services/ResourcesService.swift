@@ -1,22 +1,30 @@
 import Foundation
 import Supabase
+import PostgREST
 
 @MainActor
 class ResourcesService {
     private let supabase = SupabaseClient.shared.client
 
     func fetchResources(category: ResourceCategory? = nil) async throws -> [Resource] {
-        var query = supabase
-            .from("resources")
-            .select()
-            .eq("is_active", value: true)
-            .order("created_at", ascending: false)
+        let response: PostgrestResponse<Data>
 
         if let category = category {
-            query = query.eq("category", value: category.rawValue)
+            response = try await supabase
+                .from("resources")
+                .select()
+                .eq("is_active", value: true)
+                .eq("category", value: category.rawValue)
+                .order("created_at", ascending: false)
+                .execute()
+        } else {
+            response = try await supabase
+                .from("resources")
+                .select()
+                .eq("is_active", value: true)
+                .order("created_at", ascending: false)
+                .execute()
         }
-
-        let response = try await query.execute()
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
