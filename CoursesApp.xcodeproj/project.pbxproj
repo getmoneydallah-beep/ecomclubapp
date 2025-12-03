@@ -140,19 +140,11 @@
 		2F44B7BFEEC146A0B740980C /* Courses */ = {
 			isa = PBXGroup;
 			children = (
-				A4CA17075C104A708908D316 /* Models */,
+				1A69D4764F0940EDB33ED354 /* Models.swift */,
 				3624B6C70E2943B4A550F78D /* Services */,
 				B0B64DF80EE641BF85833BAE /* Views */,
 			);
 			path = Courses;
-			sourceTree = "<group>";
-		};
-		A4CA17075C104A708908D316 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				1A69D4764F0940EDB33ED354 /* Models.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		3624B6C70E2943B4A550F78D /* Services */ = {
