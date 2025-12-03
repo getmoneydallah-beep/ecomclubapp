@@ -13,6 +13,15 @@ struct BusinessCardView: View {
 
     private let affiliatesService = AffiliatesService()
 
+    private var userFullName: String {
+        guard let user = authManager.currentUser,
+              let fullNameJSON = user.userMetadata["full_name"],
+              case let .string(fullName) = fullNameJSON else {
+            return "عضو"
+        }
+        return fullName
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -40,7 +49,7 @@ struct BusinessCardView: View {
                         VStack(spacing: 30) {
                             // Card Preview
                             BusinessCardPreview(
-                                fullName: authManager.currentUser?.userMetadata?["full_name"] as? String ?? "عضو",
+                                fullName: userFullName,
                                 referralCode: affiliate.referralCode
                             )
                             .padding(.top, 20)
@@ -227,10 +236,9 @@ struct BusinessCardView: View {
 
     private func exportCardAsImage() {
         guard let affiliate = affiliate else { return }
-        let fullName = authManager.currentUser?.userMetadata?["full_name"] as? String ?? "عضو"
 
         let renderer = ImageRenderer(content:
-            BusinessCardPreview(fullName: fullName, referralCode: affiliate.referralCode)
+            BusinessCardPreview(fullName: userFullName, referralCode: affiliate.referralCode)
                 .frame(width: 400, height: 240)
         )
 
@@ -241,10 +249,9 @@ struct BusinessCardView: View {
 
     private func exportAndShare() {
         guard let affiliate = affiliate else { return }
-        let fullName = authManager.currentUser?.userMetadata?["full_name"] as? String ?? "عضو"
 
         let renderer = ImageRenderer(content:
-            BusinessCardPreview(fullName: fullName, referralCode: affiliate.referralCode)
+            BusinessCardPreview(fullName: userFullName, referralCode: affiliate.referralCode)
                 .frame(width: 400, height: 240)
         )
 

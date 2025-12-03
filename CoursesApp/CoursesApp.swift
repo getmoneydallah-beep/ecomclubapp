@@ -69,7 +69,7 @@ struct HTMLTextView: View {
     }
 
     private func convertHTMLToAttributedString() {
-        guard let data = htmlString.data(using: .utf8) else { return }
+        guard htmlString.data(using: .utf8) != nil else { return }
 
         // Add CSS styling to force white text color
         let styledHTML = """

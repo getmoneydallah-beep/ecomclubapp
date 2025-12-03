@@ -248,7 +248,8 @@ struct UserProfileSection: View {
                 }
 
                 VStack(spacing: 6) {
-                    if let fullName = user.userMetadata["full_name"] as? String {
+                    if let fullNameJSON = user.userMetadata["full_name"],
+                       case let .string(fullName) = fullNameJSON {
                         Text(fullName)
                             .font(.system(size: 20, weight: .bold))
                             .foregroundColor(.primaryText)
